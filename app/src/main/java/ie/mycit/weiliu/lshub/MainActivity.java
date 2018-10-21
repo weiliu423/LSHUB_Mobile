@@ -1,9 +1,12 @@
 package ie.mycit.weiliu.lshub;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -43,6 +46,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        Button loginBtn = findViewById(R.id.loginBtn);
+
+        loginBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this.getApplicationContext(), "Loading...", Toast.LENGTH_SHORT).show();
+                Intent signInIntent = new Intent(MainActivity.this.getApplicationContext(), LoginActivity.class);
+                MainActivity.this.startActivity(signInIntent);
+            }
+        });
+       //--------------------------------------------------------------------------------------------
         //Remove line to test RTL support
         //getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
 
@@ -63,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                         //don't ask but google uses 14dp for the add account icon in gmail but 20dp for the normal icons (like manage account)
                         new ProfileSettingDrawerItem().withName("Join us").withDescription("Create new Account")
                                 .withIcon(new IconicsDrawable(this, GoogleMaterial.Icon.gmd_add).actionBar().paddingDp(5)
-                                .colorRes(R.color.material_drawer_primary_text)).withIdentifier(PROFILE_SETTING)
+                                        .colorRes(R.color.material_drawer_primary_text)).withIdentifier(PROFILE_SETTING)
                         //new ProfileSettingDrawerItem().withName("Manage Account").withIcon(GoogleMaterial.Icon.gmd_settings).withIdentifier(100001)
                 )
                 .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
@@ -76,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                             IProfile newProfile = new ProfileDrawerItem().withNameShown(true).withName("Batman" + count).withEmail("batman" + count + "@gmail.com").withIcon(R.drawable.profile5).withIdentifier(count);
                             if (headerResult.getProfiles() != null) {
                                 //we know that there are 2 setting elements. set the new profile above them ;)
-                               // headerResult.addProfile(newProfile, headerResult.getProfiles().size() - 2);
+                                // headerResult.addProfile(newProfile, headerResult.getProfiles().size() - 2);
                             } else {
                                 headerResult.addProfiles(newProfile);
                             }
@@ -92,15 +107,19 @@ public class MainActivity extends AppCompatActivity {
         //Create the drawer
         result = new DrawerBuilder()
                 .withActivity(this)
+                .withTranslucentNavigationBar(true)
                 .withToolbar(toolbar)
+                .withTranslucentStatusBar(false)
                 .withHasStableIds(true)
+                .withActionBarDrawerToggle(true)
+                .withActionBarDrawerToggleAnimated(true)
                 .withItemAnimator(new AlphaCrossFadeAnimator())
                 .withAccountHeader(headerResult) //set the AccountHeader we created earlier for the header
                 .addDrawerItems(
                         new SectionDrawerItem().withName("Account").withDivider(false),
-                        new PrimaryDrawerItem().withName("Login in").withDescription("Access more features").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(1).withSelectable(false),
+                        new PrimaryDrawerItem().withName("Login").withDescription("Access more features").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(1).withSelectable(false),
                         new SectionDrawerItem().withName("My dashboard"),
-                        new PrimaryDrawerItem().withName("Home").withIcon(FontAwesome.Icon.faw_home).withIdentifier(1).withSelectable(false),
+                        new PrimaryDrawerItem().withName("Home").withIcon(FontAwesome.Icon.faw_home).withIdentifier(2).withSelectable(false),
                         new ExpandableDrawerItem().withName("Dashboard").withIcon(GoogleMaterial.Icon.gmd_dashboard).withIdentifier(19).withSelectable(false).withSubItems(
                                 new SecondaryDrawerItem().withName("Add my service").withLevel(2).withIcon(Octicons.Icon.oct_tools).withIdentifier(2001).withSelectable(false),
                                 new SecondaryDrawerItem().withName("View my profile").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_supervisor_account).withIdentifier(2002).withSelectable(false),
@@ -110,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
                         new PrimaryDrawerItem().withName("Chat with us").withIcon(GoogleMaterial.Icon.gmd_report_problem).withIdentifier(20).withSelectable(false),
                         new PrimaryDrawerItem().withName("Feedback").withIcon(GoogleMaterial.Icon.gmd_feedback).withIdentifier(21).withSelectable(false).withTag("Bullhorn"),
                         new SectionDrawerItem().withName("Services"),
-                        new PrimaryDrawerItem().withName("View services").withIcon(Octicons.Icon.oct_tools).withIdentifier(20).withSelectable(false),
+                        new PrimaryDrawerItem().withName("View services").withIcon(Octicons.Icon.oct_tools).withIdentifier(22).withSelectable(false),
                         new DividerDrawerItem(),
                         new SwitchDrawerItem().withName("Location").withIcon(Octicons.Icon.oct_location).withChecked(true).withOnCheckedChangeListener(onCheckedChangeListener)
                         /*,
@@ -133,13 +152,13 @@ public class MainActivity extends AppCompatActivity {
                         //--> click on the footer
                         //those items don't contain a drawerItem
 
-                        /*if (drawerItem != null) {
+                        if (drawerItem != null) {
                             Intent intent = null;
-                            *//*if (drawerItem.getIdentifier() == a) {
-                                intent = new Intent(MainActivity.this, CompactHeaderDrawerActivity.class);
+                            if (drawerItem.getIdentifier() == 1) {
+                                intent = new Intent(MainActivity.this, LoginActivity.class);
                             } else if (drawerItem.getIdentifier() == 2) {
-                                intent = new Intent(DrawerActivity.this, ActionBarActivity.class);
-                            } else if (drawerItem.getIdentifier() == 3) {
+                                intent = new Intent(MainActivity.this, MainActivity.class);
+                            } /*else if (drawerItem.getIdentifier() == 3) {
                                 intent = new Intent(DrawerActivity.this, MultiDrawerActivity.class);
                             } else if (drawerItem.getIdentifier() == 4) {
                                 intent = new Intent(DrawerActivity.this, NonTranslucentDrawerActivity.class);
@@ -168,24 +187,24 @@ public class MainActivity extends AppCompatActivity {
                                         .withFields(R.string.class.getFields())
                                         .withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
                                         .intent(DrawerActivity.this);
-                            }*//*
+                            }*/
                             if (intent != null) {
                                 MainActivity.this.startActivity(intent);
                             }
-                        }*/
+                        }
 
                         return false;
                     }
                 })
                 .withSavedInstance(savedInstanceState)
                 .withShowDrawerOnFirstLaunch(true)
-//              .withShowDrawerUntilDraggedOpened(true)
+                //.withShowDrawerUntilDraggedOpened(true)
                 .build();
 
         //only set the active selection or active profile if we do not recreate the activity
         if (savedInstanceState == null) {
             // set the selection to the item with the identifier 11
-            result.setSelection(21, false);
+            result.setSelection(1, false);
 
             //set the active profile
             headerResult.setActiveProfile(profile);

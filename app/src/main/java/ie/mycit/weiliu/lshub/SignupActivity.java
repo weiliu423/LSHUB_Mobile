@@ -3,15 +3,12 @@ package ie.mycit.weiliu.lshub;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
@@ -40,7 +37,7 @@ import com.mikepenz.octicons_typeface_library.Octicons;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-public class LoginActivity extends AppCompatActivity {
+public class SignupActivity extends AppCompatActivity {
 
     private static final int PROFILE_SETTING = 100000;
 
@@ -51,7 +48,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_signup);
 
         //Remove line to test RTL support
         //getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
@@ -59,27 +56,16 @@ public class LoginActivity extends AppCompatActivity {
         // Handle Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        Button loginBtn = findViewById(R.id.loginBtnPage);
+        Button loginBtn = findViewById(R.id.signupBtnPage);
 
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(LoginActivity.this.getApplicationContext(), "Loading...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SignupActivity.this.getApplicationContext(), "Loading...", Toast.LENGTH_SHORT).show();
                 hideKeyboard(v);
             }
         });
-        TextView signup = findViewById(R.id.signup);
-        SpannableString content = new SpannableString(" Sign up!");
-        content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
-        signup.setText(content);
-        signup.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                Intent signUpIntent = new Intent(LoginActivity.this.getApplicationContext(), SignupActivity.class);
-                startActivity(signUpIntent);
-            }
-        });
-        //-----------------------------------------------------
-        EditText username = findViewById(R.id.username);
+        EditText username = findViewById(R.id.usernameSignUp);
         username.setFocusableInTouchMode(false);
         username.setFocusable(false);
         username.setFocusableInTouchMode(true);
@@ -137,7 +123,7 @@ public class LoginActivity extends AppCompatActivity {
                 .withAccountHeader(headerResult) //set the AccountHeader we created earlier for the header
                 .addDrawerItems(
                         new SectionDrawerItem().withName("Account").withDivider(false),
-                        new PrimaryDrawerItem().withName("Sign up").withDescription("Create new account").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(1).withSelectable(false),
+                        new PrimaryDrawerItem().withName("Login").withDescription("Access more features").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(1).withSelectable(false),
                         new SectionDrawerItem().withName("My dashboard"),
                         new PrimaryDrawerItem().withName("Home").withIcon(FontAwesome.Icon.faw_home).withIdentifier(2).withSelectable(false),
                         new ExpandableDrawerItem().withName("Dashboard").withIcon(GoogleMaterial.Icon.gmd_dashboard).withIdentifier(19).withSelectable(false).withSubItems(
@@ -175,9 +161,9 @@ public class LoginActivity extends AppCompatActivity {
                         if (drawerItem != null) {
                             Intent intent = null;
                             if (drawerItem.getIdentifier() == 1) {
-                                intent = new Intent(LoginActivity.this, SignupActivity.class);
+                                intent = new Intent(SignupActivity.this, LoginActivity.class);
                             } else if (drawerItem.getIdentifier() == 2) {
-                                intent = new Intent(LoginActivity.this, MainActivity.class);
+                                intent = new Intent(SignupActivity.this, MainActivity.class);
                             } /*else if (drawerItem.getIdentifier() == 3) {
                                 intent = new Intent(DrawerActivity.this, MultiDrawerActivity.class);
                             } else if (drawerItem.getIdentifier() == 4) {
@@ -209,7 +195,7 @@ public class LoginActivity extends AppCompatActivity {
                                         .intent(DrawerActivity.this);
                             }*/
                             if (intent != null) {
-                                LoginActivity.this.startActivity(intent);
+                                SignupActivity.this.startActivity(intent);
                             }
                         }
 

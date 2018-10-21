@@ -61,7 +61,7 @@
                         android:textStyle="bold" />
 
                     <Button
-                        android:id="@+id/button"
+                        android:id="@+id/loginBtn"
                         style="@style/Widget.AppCompat.Button.Borderless.Colored"
                         android:layout_width="225dp"
                         android:layout_height="34dp"
@@ -73,14 +73,14 @@
                 </LinearLayout>
                 <EditText
 
-                    android:id="@+id/editMobileNo"
+                    android:id="@+id/searchBox"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_margin="10dp"
+                    android:layout_height="45sp"
+                    android:layout_margin="5dp"
                     android:ems="10"
                     android:background="@drawable/searchbox"
-                    android:drawableLeft="@android:drawable/ic_search_category_default"
-                    android:hint="Find your dil ki deal"
+                    android:drawableStart="@android:drawable/ic_search_category_default"
+                    android:hint="Find your service"
                     android:gravity="center" >
                 </EditText>
                 <TextView
