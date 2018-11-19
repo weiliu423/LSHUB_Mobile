@@ -7,27 +7,29 @@
     android:gravity="center">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/toolbar4"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/md_black_1000"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:layout_constraintBottom_toTopOf="@+id/frame_container"
+        app:layout_constraintBottom_toTopOf="@+id/framecontainer1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-
+    <VideoView
+        android:id="@+id/videoView2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
     <FrameLayout
-        android:id="@+id/frame_container"
+        android:id="@+id/framecontainer1"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/md_blue_500"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar">
+        app:layout_constraintTop_toBottomOf="@id/toolbar4">
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -54,7 +56,32 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="10sp"
                     app:srcCompat="@drawable/a" />
-
+                <EditText
+                    android:id="@+id/firstName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="10sp"
+                    android:padding="2sp"
+                    android:ems="10"
+                    android:background="@drawable/searchbox"
+                    android:textSize="25sp"
+                    android:windowSoftInputMode="adjustResize"
+                    android:hint="First Name"
+                    android:textAlignment="center" />
+                <EditText
+                    android:id="@+id/surName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="10sp"
+                    android:padding="2sp"
+                    android:ems="10"
+                    android:background="@drawable/searchbox"
+                    android:textSize="25sp"
+                    android:windowSoftInputMode="adjustResize"
+                    android:hint="Last Name"
+                    android:textAlignment="center" />
                 <EditText
                     android:id="@+id/usernameSignUp"
                     android:layout_width="wrap_content"
@@ -66,7 +93,7 @@
                     android:background="@drawable/searchbox"
                     android:textSize="25sp"
                     android:windowSoftInputMode="adjustResize"
-                    android:hint="User Name"
+                    android:hint="Account Name"
                     android:textAlignment="center" />
 
                 <EditText
@@ -106,6 +133,7 @@
                     android:layout_gravity="center"
                     android:layout_margin="10sp"
                     android:ems="10"
+                    android:background="@drawable/mybutton"
                     android:padding="2sp"
                     android:text="Sign up"
                     android:textSize="25sp" />

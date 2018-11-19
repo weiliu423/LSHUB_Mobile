@@ -2,6 +2,8 @@ package ie.mycit.weiliu.lshub;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +12,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -44,6 +47,8 @@ public class SignupActivity extends AppCompatActivity {
     //save our header or result
     private AccountHeader headerResult = null;
     private Drawer result = null;
+    private VideoView videoview;
+    private Uri uri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +59,26 @@ public class SignupActivity extends AppCompatActivity {
         //getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
 
         // Handle Toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar4);
         setSupportActionBar(toolbar);
+        videoview = (VideoView) findViewById(R.id.videoView2);
+        uri = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.star1);
+        //videoview.setVideoPath();
+        videoview.setVideoURI(uri);
+        videoview.start();
+        videoview.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mediaPlayer) {
+                mediaPlayer.setLooping(true);
+            }
+        });
+        videoview.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            public void onCompletion(MediaPlayer mp) {
+                mp.reset();
+                videoview.setVideoURI(uri);
+                videoview.start();
+            }
+        });
         Button signupBtn = findViewById(R.id.signupBtnPage);
 
         signupBtn.setOnClickListener(new View.OnClickListener() {

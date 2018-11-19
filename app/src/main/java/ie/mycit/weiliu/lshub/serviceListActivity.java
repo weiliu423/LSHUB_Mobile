@@ -1,15 +1,17 @@
 package ie.mycit.weiliu.lshub;
 
-import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -36,10 +38,15 @@ import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.mikepenz.materialdrawer.model.interfaces.Nameable;
 import com.mikepenz.octicons_typeface_library.Octicons;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-public class MainActivity extends AppCompatActivity {
+public class serviceListActivity extends AppCompatActivity {
+
     private static final int PROFILE_SETTING = 100000;
 
     //save our header or result
@@ -51,53 +58,40 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_service_list);
 
-        videoview = (VideoView) findViewById(R.id.videoView);
-         uri = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.star1);
-        //videoview.setVideoPath();
-        videoview.setVideoURI(uri);
-        videoview.start();
-        videoview.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mediaPlayer) {
-                mediaPlayer.setLooping(true);
-            }
-        });
-        videoview.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            public void onCompletion(MediaPlayer mp) {
-                mp.reset();
-                videoview.setVideoURI(uri);
-                videoview.start();
-            }
-        });
-        Button loginBtn = findViewById(R.id.loginBtn);
-
-        loginBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this.getApplicationContext(), "Redirect to Login Page", Toast.LENGTH_SHORT).show();
-                Intent signInIntent = new Intent(MainActivity.this.getApplicationContext(), LoginActivity.class);
-                MainActivity.this.startActivity(signInIntent);
-            }
-        });
-
-        Button course = findViewById(R.id.btn1);
-        course.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this.getApplicationContext(), "Redirect to Course Page", Toast.LENGTH_SHORT).show();
-                Intent coursepage = new Intent(MainActivity.this.getApplicationContext(), serviceListActivity.class);
-                MainActivity.this.startActivity(coursepage);
-            }
-        });
-       //--------------------------------------------------------------------------------------------
-        //Remove line to test RTL support
-        //getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
-
-        // Handle Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar4);
         setSupportActionBar(toolbar);
+
+        ListView serviceLists = findViewById(R.id.serviceLists);
+
+        ArrayList<String> list = new ArrayList<String>();
+        list.add("Mathematics study - CIT");
+        list.add("Computer Science - CIT");
+        list.add("Electrician Course - Saint Johns");
+        list.add("Physic study - UCC");
+        list.add("Accountant study - UCC");
+        list.add("Web Design - Bruce College");
+        /*for (int i = 0; i < 5; i++) {
+            list.add("Item "+ i);
+        }*/
+        ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.listtextsize, list);
+        serviceLists.setAdapter(adapter);
+        serviceLists.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                if(position == 1)
+                {
+                    Intent signInIntent = new Intent(serviceListActivity.this.getApplicationContext(), ServiceActivity.class);
+                    serviceListActivity.this.startActivity(signInIntent);
+                }
+                Toast.makeText(getApplicationContext(),
+                        "Click ListItem Number " + position, Toast.LENGTH_LONG)
+                        .show();
+            }
+        });
+
 
         // Create a few sample profile
         // NOTE you have to define the loader logic too. See the CustomApplication for more details
@@ -108,13 +102,13 @@ public class MainActivity extends AppCompatActivity {
         headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withTranslucentStatusBar(true)
-                /*.addProfiles(
+                .addProfiles(
                         //don't ask but google uses 14dp for the add account icon in gmail but 20dp for the normal icons (like manage account)
                         new ProfileSettingDrawerItem().withName("Join us").withDescription("Create new Account")
                                 .withIcon(new IconicsDrawable(this, GoogleMaterial.Icon.gmd_add).actionBar().paddingDp(5)
-                                        .colorRes(R.color.material_drawer_primary_text)).withIdentifier(3)
+                                        .colorRes(R.color.material_drawer_primary_text)).withIdentifier(PROFILE_SETTING)
                         //new ProfileSettingDrawerItem().withName("Manage Account").withIcon(GoogleMaterial.Icon.gmd_settings).withIdentifier(100001)
-                )*/
+                )
                 .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
                     @Override
                     public boolean onProfileChanged(View view, IProfile profile, boolean current) {
@@ -152,7 +146,6 @@ public class MainActivity extends AppCompatActivity {
                 .addDrawerItems(
                         new SectionDrawerItem().withName("Account").withDivider(false),
                         new PrimaryDrawerItem().withName("Login").withDescription("Access more features").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(1).withSelectable(false),
-                        new PrimaryDrawerItem().withName("Sign up").withDescription("Create a new account with us").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(3).withSelectable(false),
                         new SectionDrawerItem().withName("My dashboard"),
                         new PrimaryDrawerItem().withName("Home").withIcon(FontAwesome.Icon.faw_home).withIdentifier(2).withSelectable(false),
                         new ExpandableDrawerItem().withName("Dashboard").withIcon(GoogleMaterial.Icon.gmd_dashboard).withIdentifier(19).withSelectable(false).withSubItems(
@@ -190,12 +183,12 @@ public class MainActivity extends AppCompatActivity {
                         if (drawerItem != null) {
                             Intent intent = null;
                             if (drawerItem.getIdentifier() == 1) {
-                                intent = new Intent(MainActivity.this, LoginActivity.class);
+                                intent = new Intent(serviceListActivity.this, LoginActivity.class);
                             } else if (drawerItem.getIdentifier() == 2) {
-                                intent = new Intent(MainActivity.this, MainActivity.class);
-                            } else if (drawerItem.getIdentifier() == 3) {
-                                intent = new Intent(MainActivity.this, SignupActivity.class);
-                            } /*else if (drawerItem.getIdentifier() == 4) {
+                                intent = new Intent(serviceListActivity.this, serviceListActivity.class);
+                            } /*else if (drawerItem.getIdentifier() == 3) {
+                                intent = new Intent(DrawerActivity.this, MultiDrawerActivity.class);
+                            } else if (drawerItem.getIdentifier() == 4) {
                                 intent = new Intent(DrawerActivity.this, NonTranslucentDrawerActivity.class);
                             } else if (drawerItem.getIdentifier() == 5) {
                                 intent = new Intent(DrawerActivity.this, AdvancedActivity.class);
@@ -224,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
                                         .intent(DrawerActivity.this);
                             }*/
                             if (intent != null) {
-                                MainActivity.this.startActivity(intent);
+                                serviceListActivity.this.startActivity(intent);
                                 finish();
                             }
                         }
@@ -297,6 +290,30 @@ public class MainActivity extends AppCompatActivity {
         if (videoview != null && videoview.isPlaying()) {
             videoview.pause();
         }
+    }
+    private class StableArrayAdapter extends ArrayAdapter<String> {
+
+        HashMap<String, Integer> mIdMap = new HashMap<String, Integer>();
+
+        public StableArrayAdapter(Context context, int textViewResourceId,
+                                  List<String> objects) {
+            super(context, textViewResourceId, objects);
+            for (int i = 0; i < objects.size(); ++i) {
+                mIdMap.put(objects.get(i), i);
+            }
+        }
+
+        @Override
+        public long getItemId(int position) {
+            String item = getItem(position);
+            return mIdMap.get(item);
+        }
+
+        @Override
+        public boolean hasStableIds() {
+            return true;
+        }
+
     }
 
 

@@ -62,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
         //getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
 
         // Handle Toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar4);
         setSupportActionBar(toolbar);
         videoview = (VideoView) findViewById(R.id.videoView1);
         uri = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.star1);

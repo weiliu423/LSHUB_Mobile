@@ -7,13 +7,13 @@
     android:gravity="center">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/toolbar4"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/md_black_1000"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:layout_constraintBottom_toTopOf="@+id/frame_container"
+        app:layout_constraintBottom_toTopOf="@+id/framecontainer1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -23,13 +23,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
     <FrameLayout
-        android:id="@+id/frame_container"
+        android:id="@+id/framecontainer1"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar">
+        app:layout_constraintTop_toBottomOf="@id/toolbar4">
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -100,6 +100,7 @@
                 android:layout_gravity="center"
                 android:layout_margin="10sp"
                 android:ems="10"
+                android:background="@drawable/mybutton"
                 android:padding="2sp"
                 android:text="Login"
                 android:textSize="25sp" />
