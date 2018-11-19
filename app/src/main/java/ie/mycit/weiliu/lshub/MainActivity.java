@@ -1,12 +1,15 @@
 package ie.mycit.weiliu.lshub;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -39,20 +42,39 @@ public class MainActivity extends AppCompatActivity {
 
     //save our header or result
     private AccountHeader headerResult = null;
-    private Drawer result = null;
+    private Drawer result = null;private VideoView videoview;
+    private Uri uri;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        videoview = (VideoView) findViewById(R.id.videoView);
+         uri = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.star1);
+        //videoview.setVideoPath();
+        videoview.setVideoURI(uri);
+        videoview.start();
+        videoview.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mediaPlayer) {
+                mediaPlayer.setLooping(true);
+            }
+        });
+        videoview.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            public void onCompletion(MediaPlayer mp) {
+                mp.reset();
+                videoview.setVideoURI(uri);
+                videoview.start();
+            }
+        });
         Button loginBtn = findViewById(R.id.loginBtn);
 
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this.getApplicationContext(), "Loading...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this.getApplicationContext(), "Redirect to Login Page", Toast.LENGTH_SHORT).show();
                 Intent signInIntent = new Intent(MainActivity.this.getApplicationContext(), LoginActivity.class);
                 MainActivity.this.startActivity(signInIntent);
             }
@@ -190,6 +212,7 @@ public class MainActivity extends AppCompatActivity {
                             }*/
                             if (intent != null) {
                                 MainActivity.this.startActivity(intent);
+                                finish();
                             }
                         }
 
@@ -243,6 +266,25 @@ public class MainActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }@Override
+    protected void onResume() {
+        super.onResume();
+        if(videoview!=null){
+            videoview = (VideoView) findViewById(R.id.videoView);
+            uri = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.star1);
+            //videoview.setVideoPath();
+            videoview.setVideoURI(uri);
+            videoview.start();
+        }
+
     }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (videoview != null && videoview.isPlaying()) {
+            videoview.pause();
+        }
+    }
+
 
 }

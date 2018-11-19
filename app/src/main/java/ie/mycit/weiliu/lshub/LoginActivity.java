@@ -2,6 +2,8 @@ package ie.mycit.weiliu.lshub;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
@@ -13,6 +15,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -47,6 +50,8 @@ public class LoginActivity extends AppCompatActivity {
     //save our header or result
     private AccountHeader headerResult = null;
     private Drawer result = null;
+    private VideoView videoview;
+    private Uri uri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,12 +64,30 @@ public class LoginActivity extends AppCompatActivity {
         // Handle Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        videoview = (VideoView) findViewById(R.id.videoView1);
+        uri = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.star1);
+        //videoview.setVideoPath();
+        videoview.setVideoURI(uri);
+        videoview.start();
+        videoview.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mediaPlayer) {
+                mediaPlayer.setLooping(true);
+            }
+        });
+        videoview.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            public void onCompletion(MediaPlayer mp) {
+                mp.reset();
+                videoview.setVideoURI(uri);
+                videoview.start();
+            }
+        });
         Button loginBtn = findViewById(R.id.loginBtnPage);
 
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(LoginActivity.this.getApplicationContext(), "Loading...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this.getApplicationContext(), "You clicked Login Button", Toast.LENGTH_SHORT).show();
                 hideKeyboard(v);
             }
         });
@@ -210,6 +233,7 @@ public class LoginActivity extends AppCompatActivity {
                             }*/
                             if (intent != null) {
                                 LoginActivity.this.startActivity(intent);
+                                finish();
                             }
                         }
 
@@ -292,5 +316,24 @@ public class LoginActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(videoview!=null){
+            videoview = (VideoView) findViewById(R.id.videoView1);
+            uri = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.star1);
+            //videoview.setVideoPath();
+            videoview.setVideoURI(uri);
+            videoview.start();
+        }
 
-}
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (videoview != null && videoview.isPlaying()) {
+            videoview.pause();
+        }
+    }
+
+    }

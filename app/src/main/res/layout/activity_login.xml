@@ -18,12 +18,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-
+    <VideoView
+        android:id="@+id/videoView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
     <FrameLayout
         android:id="@+id/frame_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/md_blue_500"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -112,6 +114,7 @@
                     android:id="@+id/textView3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/white"
                     android:text="Need a account?"
                     android:textAlignment="center"
                     android:textSize="20sp" />
@@ -123,7 +126,7 @@
                     android:text=" Sign up!"
                     android:textAlignment="center"
                     android:textAllCaps="false"
-                    android:textColor="@color/md_red_900"
+                    android:textColor="@color/md_blue_500"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:typeface="serif" />

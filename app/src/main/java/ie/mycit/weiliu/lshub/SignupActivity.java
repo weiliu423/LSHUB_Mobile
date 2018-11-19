@@ -56,12 +56,12 @@ public class SignupActivity extends AppCompatActivity {
         // Handle Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        Button loginBtn = findViewById(R.id.signupBtnPage);
+        Button signupBtn = findViewById(R.id.signupBtnPage);
 
-        loginBtn.setOnClickListener(new View.OnClickListener() {
+        signupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(SignupActivity.this.getApplicationContext(), "Loading...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SignupActivity.this.getApplicationContext(), "You clicked Sign up", Toast.LENGTH_SHORT).show();
                 hideKeyboard(v);
             }
         });
@@ -196,6 +196,7 @@ public class SignupActivity extends AppCompatActivity {
                             }*/
                             if (intent != null) {
                                 SignupActivity.this.startActivity(intent);
+                                finish();
                             }
                         }
 
