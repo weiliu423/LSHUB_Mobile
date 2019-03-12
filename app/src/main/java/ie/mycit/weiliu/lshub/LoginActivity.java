@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -40,6 +41,13 @@ import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.mikepenz.materialdrawer.model.interfaces.Nameable;
 import com.mikepenz.octicons_typeface_library.Octicons;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -52,6 +60,7 @@ public class LoginActivity extends AppCompatActivity {
     private Drawer result = null;
     private VideoView videoview;
     private Uri uri;
+    private ProgressBar spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,11 +92,65 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         Button loginBtn = findViewById(R.id.loginBtnPage);
-
+        spinner = (ProgressBar)findViewById(R.id.progressBar2);
+        spinner.setVisibility(View.GONE);
+        final EditText username = findViewById(R.id.username);
+        final EditText password = findViewById(R.id.password);
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(LoginActivity.this.getApplicationContext(), "You clicked Login Button", Toast.LENGTH_SHORT).show();
+                final Thread thread = new Thread(new Runnable(){
+                    public void run() {
+                        try {
+                            runOnUiThread(new Runnable() {
+
+                                @Override
+                                public void run() {
+
+                                    spinner.setVisibility(View.VISIBLE);
+
+                                }
+                            });
+                            String UserName = username.getText().toString();
+                            String Password = password.getText().toString();
+
+
+                            String result = POSTRequest(UserName, Password);
+                            System.out.println("------------"+ result + "-------------");
+                            if( result == null || result.contains("false"))
+                            {
+                                runOnUiThread(new Runnable() {
+
+                                    @Override
+                                    public void run() {
+
+                                        Toast.makeText(LoginActivity.this.getApplicationContext(), "Error occurred/User doesn't exists, Please check input", Toast.LENGTH_LONG).show();
+                                        spinner.setVisibility(View.GONE);
+
+                                    }
+                                });
+
+                            }else {
+                                runOnUiThread(new Runnable() {
+
+                                    @Override
+                                    public void run() {
+
+                                        Toast.makeText(LoginActivity.this.getApplicationContext(), "Account Login Successfully", Toast.LENGTH_LONG).show();
+                                        spinner.setVisibility(View.GONE);
+                                        username.getText().clear();
+                                        password.getText().clear();
+
+                                    }
+                                });
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+                thread.start();
                 hideKeyboard(v);
             }
         });
@@ -102,7 +165,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         //-----------------------------------------------------
-        EditText username = findViewById(R.id.username);
+
         username.setFocusableInTouchMode(false);
         username.setFocusable(false);
         username.setFocusableInTouchMode(true);
@@ -274,6 +337,44 @@ public class LoginActivity extends AppCompatActivity {
 
 
     }
+    public String POSTRequest(String UserName, String Password) throws IOException {
+
+        final String POST_PARAMS = "{\n" +
+                "    \"UserName\": \""+UserName+"\",\r\n" +
+                "    \"Password\": \""+Password+"\"" + "\n}";
+        System.out.println(POST_PARAMS);
+        URL obj = new URL("https://lshapi.azurewebsites.net/accountValidation");
+        HttpURLConnection postConnection = (HttpURLConnection) obj.openConnection();
+        postConnection.setRequestMethod("POST");
+        //Header--------------------------------------------------------
+        //postConnection.setRequestProperty("userId", "a1bcdefgh");
+        postConnection.setRequestProperty("Content-Type", "application/json");
+        postConnection.setDoOutput(true);
+        OutputStream os = postConnection.getOutputStream();
+        os.write(POST_PARAMS.getBytes());
+        os.flush();
+        os.close();
+        int responseCode = postConnection.getResponseCode();
+        System.out.println("POST Response Code :  " + responseCode);
+        System.out.println("POST Response Message : " + postConnection.getResponseMessage());
+        if (responseCode == HttpURLConnection.HTTP_CREATED) { //success
+            BufferedReader in = new BufferedReader(new InputStreamReader(
+                    postConnection.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+            while ((inputLine = in .readLine()) != null) {
+                response.append(inputLine);
+            } in .close();
+            // print result
+            System.out.println(response.toString());
+            return response.toString();
+
+        } else {
+            System.out.println("POST NOT WORKED");
+            return null;
+        }
+    }
+    //--------------------------------------------------------------
     public void hideKeyboard(View view) {
         Log.e("", "hideKeyboard: ");
         InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);

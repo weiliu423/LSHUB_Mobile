@@ -127,7 +127,7 @@ public class SignupActivity extends AppCompatActivity {
                                     @Override
                                     public void run() {
 
-                                        Toast.makeText(SignupActivity.this.getApplicationContext(), "Error occurred, Please check input", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(SignupActivity.this.getApplicationContext(), "Error occurred/User exists, Please check input", Toast.LENGTH_LONG).show();
                                         spinner.setVisibility(View.GONE);
 
                                     }
