@@ -11,6 +11,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -37,6 +38,13 @@ import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.mikepenz.materialdrawer.model.interfaces.Nameable;
 import com.mikepenz.octicons_typeface_library.Octicons;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -49,6 +57,8 @@ public class SignupActivity extends AppCompatActivity {
     private Drawer result = null;
     private VideoView videoview;
     private Uri uri;
+    private ProgressBar spinner;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +67,6 @@ public class SignupActivity extends AppCompatActivity {
 
         //Remove line to test RTL support
         //getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
-
         // Handle Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar4);
         setSupportActionBar(toolbar);
@@ -80,15 +89,77 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
         Button signupBtn = findViewById(R.id.signupBtnPage);
-
+        spinner = (ProgressBar)findViewById(R.id.progressBar1);
+        spinner.setVisibility(View.GONE);
+        final EditText firstName = (EditText)findViewById(R.id.firstName);
+        final EditText lastName = (EditText)findViewById(R.id.surName);
+        final EditText email = (EditText)findViewById(R.id.emailSignUp);
+        final EditText password = (EditText)findViewById(R.id.passwordSignUp);
+        final EditText username = findViewById(R.id.usernameSignUp);
         signupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(SignupActivity.this.getApplicationContext(), "You clicked Sign up", Toast.LENGTH_SHORT).show();
+
+                final Thread thread = new Thread(new Runnable(){
+                    public void run() {
+                        try {
+                            runOnUiThread(new Runnable() {
+
+                                @Override
+                                public void run() {
+
+                                    spinner.setVisibility(View.VISIBLE);
+
+                                }
+                            });
+                            String UserName = username.getText().toString();
+                            String Password = password.getText().toString();
+                            String FirstName = firstName.getText().toString();
+                            String LastName = lastName.getText().toString();
+                            String Email = email.getText().toString();
+
+                            String result = POSTRequest(UserName, Password, FirstName, LastName, Email);
+                            System.out.println("------------"+ result + "-------------");
+                            if( result == null)
+                            {
+                                runOnUiThread(new Runnable() {
+
+                                    @Override
+                                    public void run() {
+
+                                        Toast.makeText(SignupActivity.this.getApplicationContext(), "Error occurred, Please check input", Toast.LENGTH_LONG).show();
+                                        spinner.setVisibility(View.GONE);
+
+                                    }
+                                });
+
+                            }else {
+                                runOnUiThread(new Runnable() {
+
+                                    @Override
+                                    public void run() {
+
+                                        Toast.makeText(SignupActivity.this.getApplicationContext(), "Success, Account created", Toast.LENGTH_LONG).show();
+                                        spinner.setVisibility(View.GONE);
+                                        username.getText().clear();
+                                        password.getText().clear();
+                                        firstName.getText().clear();
+                                        lastName.getText().clear();
+                                        email.getText().clear();
+                                    }
+                                });
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+                thread.start();
                 hideKeyboard(v);
             }
         });
-        EditText username = findViewById(R.id.usernameSignUp);
+
         username.setFocusableInTouchMode(false);
         username.setFocusable(false);
         username.setFocusableInTouchMode(true);
@@ -260,6 +331,48 @@ public class SignupActivity extends AppCompatActivity {
 
 
     }
+
+    public String POSTRequest(String UserName, String Password,String FirstName,String LastName,String Email) throws IOException {
+
+        final String POST_PARAMS = "{\n" +
+                "    \"UserName\": \""+UserName+"\",\r\n" +
+                "    \"Password\": "+ Password +",\r\n" +
+                "    \"FirstName\": \""+FirstName+"\",\r\n" +
+                "    \"LastName\": \""+LastName+"\",\r\n" +
+                "    \"Email\": \""+Email+"\"" + "\n}";
+        System.out.println(POST_PARAMS);
+        URL obj = new URL("https://lshapi.azurewebsites.net/createNewAccount");
+        HttpURLConnection postConnection = (HttpURLConnection) obj.openConnection();
+        postConnection.setRequestMethod("POST");
+        //Header--------------------------------------------------------
+        //postConnection.setRequestProperty("userId", "a1bcdefgh");
+        postConnection.setRequestProperty("Content-Type", "application/json");
+        postConnection.setDoOutput(true);
+        OutputStream os = postConnection.getOutputStream();
+        os.write(POST_PARAMS.getBytes());
+        os.flush();
+        os.close();
+        int responseCode = postConnection.getResponseCode();
+        System.out.println("POST Response Code :  " + responseCode);
+        System.out.println("POST Response Message : " + postConnection.getResponseMessage());
+        if (responseCode == HttpURLConnection.HTTP_CREATED) { //success
+            BufferedReader in = new BufferedReader(new InputStreamReader(
+                    postConnection.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+            while ((inputLine = in .readLine()) != null) {
+                response.append(inputLine);
+            } in .close();
+            // print result
+            System.out.println(response.toString());
+            return response.toString();
+
+        } else {
+            System.out.println("POST NOT WORKED");
+            return null;
+        }
+    }
+    //------------------------------------------------------------------------------------------------------------------------
     public void hideKeyboard(View view) {
         Log.e("", "hideKeyboard: ");
         InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);

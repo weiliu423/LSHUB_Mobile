@@ -22,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:lineSpacingExtra="8sp"
                 android:gravity="center"
-                android:padding="10dp"
+                android:padding="5dp"
                 android:textAllCaps="true"
                 android:textColor="@color/md_yellow_500"
                 android:textSize="18sp"
@@ -31,7 +31,7 @@
             <ImageView
                 android:id="@+id/imageView3"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="280dp"
                 app:srcCompat="@drawable/course"
                 tools:src="@tools:sample/backgrounds/scenic[1]" />
 
@@ -39,7 +39,7 @@
                 android:id="@+id/section_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_marginTop="5dp"
                 android:gravity="center"
                 android:textColor="@color/md_yellow_500"
                 app:layout_constraintLeft_toLeftOf="parent"
