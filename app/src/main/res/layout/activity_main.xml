@@ -9,7 +9,7 @@
         android:id="@+id/toolbar4"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/md_black_1000"
+        android:background="@color/md_light_blue_A700"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:layout_constraintBottom_toTopOf="@+id/framecontainer1"
@@ -45,7 +45,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/orange"
+                    android:background="@color/md_white_1000"
                     android:gravity="center"
                     android:orientation="vertical"
                     android:padding="10dp">

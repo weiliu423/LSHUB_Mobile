@@ -18,6 +18,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
@@ -47,9 +50,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -92,7 +92,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         Button loginBtn = findViewById(R.id.loginBtnPage);
-        spinner = (ProgressBar)findViewById(R.id.progressBar2);
+        spinner = findViewById(R.id.progressBar2);
         spinner.setVisibility(View.GONE);
         final EditText username = findViewById(R.id.username);
         final EditText password = findViewById(R.id.password);
@@ -299,7 +299,6 @@ public class LoginActivity extends AppCompatActivity {
                                 finish();
                             }
                         }
-
                         return false;
                     }
                 })
@@ -380,13 +379,7 @@ public class LoginActivity extends AppCompatActivity {
         InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
-    public static void hideSoftKeyboard(Activity activity) {
-        InputMethodManager inputMethodManager =
-                (InputMethodManager) activity.getSystemService(
-                        Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(
-                activity.getCurrentFocus().getWindowToken(), 0);
-    }
+
     private OnCheckedChangeListener onCheckedChangeListener = new OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {

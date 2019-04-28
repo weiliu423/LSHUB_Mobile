@@ -6,4 +6,5 @@
     <string name="section_format">Hi Im name is Course: %1$d</string>
     <string name="title_activity_course">CourseActivity</string>
     <string name="title_activity_service">ServiceActivity</string>
+    <string name="spinner_title">Category</string>
 </resources>

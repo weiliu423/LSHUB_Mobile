@@ -11,6 +11,9 @@ import android.widget.CompoundButton;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.itemanimators.AlphaCrossFadeAnimator;
@@ -31,9 +34,6 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.mikepenz.materialdrawer.model.interfaces.Nameable;
 import com.mikepenz.octicons_typeface_library.Octicons;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 public class MainActivity extends AppCompatActivity {
     private static final int PROFILE_SETTING = 100000;
@@ -151,16 +151,17 @@ public class MainActivity extends AppCompatActivity {
                         new PrimaryDrawerItem().withName("Sign up").withDescription("Create a new account").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(3).withSelectable(false),
                         new SectionDrawerItem().withName("My dashboard"),
                         new PrimaryDrawerItem().withName("Home").withIcon(FontAwesome.Icon.faw_home).withIdentifier(2).withSelectable(false),
-                        new ExpandableDrawerItem().withName("Dashboard").withIcon(GoogleMaterial.Icon.gmd_dashboard).withIdentifier(19).withSelectable(false).withSubItems(
-                                new SecondaryDrawerItem().withName("Add my service").withLevel(2).withIcon(Octicons.Icon.oct_tools).withIdentifier(2001).withSelectable(false),
-                                new SecondaryDrawerItem().withName("View my profile").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_supervisor_account).withIdentifier(2002).withSelectable(false),
-                                new SecondaryDrawerItem().withName("View my reviews").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_rate_review).withIdentifier(2003).withSelectable(false)
+                        new ExpandableDrawerItem().withName("Dashboard").withIcon(GoogleMaterial.Icon.gmd_dashboard).withIdentifier(4).withSelectable(false).withSubItems(
+                                new SecondaryDrawerItem().withName("Add my service").withLevel(2).withIcon(Octicons.Icon.oct_tools).withIdentifier(5).withSelectable(false),
+                                new SecondaryDrawerItem().withName("View my profile").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_supervisor_account).withIdentifier(6).withSelectable(false),
+                                new SecondaryDrawerItem().withName("View my reviews").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_rate_review).withIdentifier(7).withSelectable(false)
                         ),
                         new SectionDrawerItem().withName("Contact us"),
-                        new PrimaryDrawerItem().withName("Chat with us").withIcon(GoogleMaterial.Icon.gmd_report_problem).withIdentifier(20).withSelectable(false),
-                        new PrimaryDrawerItem().withName("Feedback").withIcon(GoogleMaterial.Icon.gmd_feedback).withIdentifier(21).withSelectable(false).withTag("Bullhorn"),
+                        new PrimaryDrawerItem().withName("Chat with us").withIcon(GoogleMaterial.Icon.gmd_report_problem).withIdentifier(8).withSelectable(false),
+                        new PrimaryDrawerItem().withName("Feedback").withIcon(GoogleMaterial.Icon.gmd_feedback).withIdentifier(9).withSelectable(false).withTag("Bullhorn"),
                         new SectionDrawerItem().withName("Services"),
-                        new PrimaryDrawerItem().withName("View services").withIcon(Octicons.Icon.oct_tools).withIdentifier(22).withSelectable(false),
+                        new PrimaryDrawerItem().withName("View services").withIcon(Octicons.Icon.oct_tools).withIdentifier(10).withSelectable(false),
+                        new PrimaryDrawerItem().withName("Upload services").withIcon(Octicons.Icon.oct_tools).withIdentifier(11).withSelectable(false),
                         new DividerDrawerItem(),
                         new SwitchDrawerItem().withName("Location").withIcon(Octicons.Icon.oct_location).withChecked(true).withOnCheckedChangeListener(onCheckedChangeListener)
                         /*,
@@ -191,9 +192,9 @@ public class MainActivity extends AppCompatActivity {
                                 intent = new Intent(MainActivity.this, MainActivity.class);
                             } else if (drawerItem.getIdentifier() == 3) {
                                 intent = new Intent(MainActivity.this, SignupActivity.class);
-                            } /*else if (drawerItem.getIdentifier() == 4) {
-                                intent = new Intent(DrawerActivity.this, NonTranslucentDrawerActivity.class);
-                            } else if (drawerItem.getIdentifier() == 5) {
+                            } else if (drawerItem.getIdentifier() == 11) {
+                                intent = new Intent(MainActivity.this, uploadServiceActivity.class);
+                            } /*else if (drawerItem.getIdentifier() == 5) {
                                 intent = new Intent(DrawerActivity.this, AdvancedActivity.class);
                             } else if (drawerItem.getIdentifier() == 7) {
                                 intent = new Intent(DrawerActivity.this, EmbeddedDrawerActivity.class);
