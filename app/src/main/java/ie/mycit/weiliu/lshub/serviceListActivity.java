@@ -2,18 +2,19 @@ package ie.mycit.weiliu.lshub;
 
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.VideoView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -38,12 +39,20 @@ import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.mikepenz.materialdrawer.model.interfaces.Nameable;
 import com.mikepenz.octicons_typeface_library.Octicons;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import dmax.dialog.SpotsDialog;
 
 public class serviceListActivity extends AppCompatActivity {
 
@@ -53,7 +62,8 @@ public class serviceListActivity extends AppCompatActivity {
     private AccountHeader headerResult = null;
     private Drawer result = null;private VideoView videoview;
     private Uri uri;
-
+    HttpURLConnection urlConnection;
+    SpotsDialog progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,18 +75,48 @@ public class serviceListActivity extends AppCompatActivity {
 
         ListView serviceLists = findViewById(R.id.serviceLists);
 
-        ArrayList<String> list = new ArrayList<String>();
-        list.add("Mathematics study - CIT");
-        list.add("Computer Science - CIT");
-        list.add("Electrician Course - Saint Johns");
-        list.add("Physic study - UCC");
-        list.add("Accountant study - UCC");
-        list.add("Web Design - Bruce College");
-        /*for (int i = 0; i < 5; i++) {
-            list.add("Item "+ i);
-        }*/
-        ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.listtextsize, list);
-        serviceLists.setAdapter(adapter);
+        showLoadingAnimation("Loading services, Please Wait, Thank you");
+        Thread thread = new Thread(new Runnable(){
+            public void run() {
+                        //ArrayList<String> list = new ArrayList<String>();
+
+                        try {
+                            ArrayList<String> list = GetRequest("Courses");
+                            /*for (int i = 0; i < list1.size(); i++) {
+
+                                list.add(list1.get(i));
+                            }*/
+                        if(!list.isEmpty()) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getApplicationContext(),
+                                            list.get(0), Toast.LENGTH_LONG)
+                                            .show();
+                                    ArrayAdapter adapter = new ArrayAdapter<String>(serviceListActivity.this, R.layout.listtextsize, list);
+                                    serviceLists.setAdapter(adapter);
+                                    hideLoadingAnimation();
+                                }
+                            });
+                        }else{
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getApplicationContext(),
+                                            "Error loading data!", Toast.LENGTH_LONG)
+                                            .show();
+                                    hideLoadingAnimation();
+                                }
+                            });
+                        }
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+            }
+        });
+
+        thread.start();
+
         serviceLists.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
@@ -243,7 +283,72 @@ public class serviceListActivity extends AppCompatActivity {
 
         result.updateBadge(4, new StringHolder(10 + ""));
     }
+   // "https://serviceinfo.azurewebsites.net/getServicesByName/"+ category
 
+    public ArrayList<String> GetRequest(String category) throws IOException {
+        ArrayList<String> list = new ArrayList<String>();
+        System.out.println("TTTTTTTTTTTTTTTTTT :: " + category);
+        URL obj = new URL("https://serviceinfo.azurewebsites.net/getServicesByName/"+ category);
+        HttpURLConnection httpConnection = (HttpURLConnection) obj.openConnection();
+        httpConnection.setRequestMethod("GET");
+        httpConnection.setUseCaches(false);
+        httpConnection.setAllowUserInteraction(false);
+        httpConnection.setConnectTimeout(100000);
+        httpConnection.setReadTimeout(100000);
+        httpConnection.connect();
+        int responseCode = httpConnection.getResponseCode();
+        System.out.println("Response Code :: " + responseCode);
+        if (responseCode == HttpURLConnection.HTTP_OK) { // connection ok
+            BufferedReader in = new BufferedReader(new InputStreamReader( httpConnection.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+            try {
+                JSONObject mainObject = new JSONObject(response.toString());
+                JSONArray Data = mainObject.getJSONArray("Data");
+
+                list.add("Select an item");
+                for (int i = 0; i <= Data.length(); i++) {
+
+                    JSONObject data = Data.getJSONObject(i);
+                    JSONArray serviceInfo = data.getJSONArray("serviceInfo");
+                    for(int j=0; j<serviceInfo.length();j++){
+                        JSONObject actor = serviceInfo.getJSONObject(j);
+                        String name = actor.getString("Name");
+                        list.add(name);
+                    }
+                }
+
+            } catch (JSONException e) {
+
+            }
+
+            //list.add("test1");
+            return list;
+
+        } else {
+            return list;
+        }
+    }
+    void showLoadingAnimation(String loadingMessage){
+        //ProgressDialog.show(this, "Loading", "Wait while loading...");
+        progress = new SpotsDialog(this,  R.style.Custom);
+        progress.setTitle("Loading");
+        progress.setMessage(loadingMessage);
+        progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
+        progress.show();
+
+    }
+
+    void hideLoadingAnimation(){
+        // dismiss the dialog
+        progress.dismiss();
+
+    }
     private OnCheckedChangeListener onCheckedChangeListener = new OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {

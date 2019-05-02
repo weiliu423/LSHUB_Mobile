@@ -83,8 +83,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(MainActivity.this.getApplicationContext(), "Redirect to Course Page", Toast.LENGTH_SHORT).show();
-                Intent coursepage = new Intent(MainActivity.this.getApplicationContext(), serviceListActivity.class);
-                MainActivity.this.startActivity(coursepage);
+                Bundle b = new Bundle();
+
+                // Storing data into bundle
+                b.putString("imgUrl", "https://res.cloudinary.com/predator423/image/upload/v1556532615/Poster_sytajh.png");
+                Intent coursepage = new Intent(MainActivity.this, serviceListActivity.class);
+                coursepage.putExtras(b);
+                startActivity(coursepage);
             }
         });
        //--------------------------------------------------------------------------------------------

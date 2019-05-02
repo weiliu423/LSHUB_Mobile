@@ -37,13 +37,6 @@
             android:fillViewport="true">
 
         </androidx.core.widget.NestedScrollView>
-        <ProgressBar
-            android:id="@+id/login_progress"
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:visibility="gone" />
         <ScrollView
             android:id="@+id/login_form"
             android:gravity="center"
@@ -55,12 +48,6 @@
             android:gravity="center"
             android:layout_gravity="center_vertical|center_horizontal"
             android:orientation="vertical">
-            <ProgressBar
-                android:id="@+id/progressBar2"
-                style="?android:attr/progressBarStyleLarge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true" />
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="match_parent"

@@ -11,9 +11,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.VideoView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -45,8 +47,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import dmax.dialog.SpotsDialog;
 
 public class SignupActivity extends AppCompatActivity {
 
@@ -57,7 +58,7 @@ public class SignupActivity extends AppCompatActivity {
     private Drawer result = null;
     private VideoView videoview;
     private Uri uri;
-    private ProgressBar spinner;
+    SpotsDialog progress;
 
 
     @Override
@@ -89,8 +90,7 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
         Button signupBtn = findViewById(R.id.signupBtnPage);
-        spinner = (ProgressBar)findViewById(R.id.progressBar1);
-        spinner.setVisibility(View.GONE);
+
         final EditText firstName = (EditText)findViewById(R.id.firstName);
         final EditText lastName = (EditText)findViewById(R.id.surName);
         final EditText email = (EditText)findViewById(R.id.emailSignUp);
@@ -108,7 +108,7 @@ public class SignupActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
 
-                                    spinner.setVisibility(View.VISIBLE);
+                                    showLoadingAnimation("Validating, Thank you!");
 
                                 }
                             });
@@ -128,7 +128,7 @@ public class SignupActivity extends AppCompatActivity {
                                     public void run() {
 
                                         Toast.makeText(SignupActivity.this.getApplicationContext(), "Error occurred/User exists, Please check input", Toast.LENGTH_LONG).show();
-                                        spinner.setVisibility(View.GONE);
+                                        hideLoadingAnimation();
 
                                     }
                                 });
@@ -140,7 +140,7 @@ public class SignupActivity extends AppCompatActivity {
                                     public void run() {
 
                                         Toast.makeText(SignupActivity.this.getApplicationContext(), "Success, Account created", Toast.LENGTH_LONG).show();
-                                        spinner.setVisibility(View.GONE);
+                                        hideLoadingAnimation();
                                         username.getText().clear();
                                         password.getText().clear();
                                         firstName.getText().clear();
@@ -331,7 +331,22 @@ public class SignupActivity extends AppCompatActivity {
 
 
     }
+    void showLoadingAnimation(String loadingMessage){
+        //ProgressDialog.show(this, "Loading", "Wait while loading...");
+        progress = new SpotsDialog(this,  R.style.Custom);
+        progress.setTitle("Loading");
+        progress.setMessage(loadingMessage);
+        progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
+        progress.show();
 
+    }
+    private final int SPLASH_DISPLAY_LENGTH = 2000;
+
+    void hideLoadingAnimation(){
+        // dismiss the dialog
+        progress.dismiss();
+
+    }
     public String POSTRequest(String UserName, String Password,String FirstName,String LastName,String Email) throws IOException {
 
         final String POST_PARAMS = "{\n" +
