@@ -60,11 +60,12 @@ public class serviceListActivity extends AppCompatActivity {
 
     //save our header or result
     private AccountHeader headerResult = null;
-    private Drawer result = null;private VideoView videoview;
+    private Drawer result = null;
+    private VideoView videoview;
     private Uri uri;
-    HttpURLConnection urlConnection;
     SpotsDialog progress;
-
+    JSONArray Data;
+    ArrayList<String> list;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,21 +79,24 @@ public class serviceListActivity extends AppCompatActivity {
         showLoadingAnimation("Loading services, Please Wait, Thank you");
         Thread thread = new Thread(new Runnable(){
             public void run() {
-                        //ArrayList<String> list = new ArrayList<String>();
-
+                        list = new ArrayList<String>();
+                        list.add("Select an item");
                         try {
-                            ArrayList<String> list = GetRequest("Courses");
-                            /*for (int i = 0; i < list1.size(); i++) {
+                            Data = GetRequest("Courses");
+                            for (int i = 0; i < Data.length(); i++) {
+                                JSONObject data = Data.getJSONObject(i);
+                                JSONArray serviceInfo = data.getJSONArray("serviceInfo");
+                                for (int j = 0; j < serviceInfo.length(); j++) {
+                                    JSONObject actor = serviceInfo.getJSONObject(j);
+                                    String name = actor.getString("Name");
+                                    list.add(name);
+                                }
+                            }
 
-                                list.add(list1.get(i));
-                            }*/
                         if(!list.isEmpty()) {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(getApplicationContext(),
-                                            list.get(0), Toast.LENGTH_LONG)
-                                            .show();
                                     ArrayAdapter adapter = new ArrayAdapter<String>(serviceListActivity.this, R.layout.listtextsize, list);
                                     serviceLists.setAdapter(adapter);
                                     hideLoadingAnimation();
@@ -119,16 +123,45 @@ public class serviceListActivity extends AppCompatActivity {
 
         serviceLists.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                if(position == 1)
-                {
-                    Intent signInIntent = new Intent(serviceListActivity.this.getApplicationContext(), ServiceActivity.class);
-                    serviceListActivity.this.startActivity(signInIntent);
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                JSONObject all = new JSONObject();
+                JSONArray serviceInfo = new JSONArray();
+                String ContactName = "";
+                String ContactEmail = "";
+                String ContactNo = "";
+                try {
+                    for (int i = 0; i < Data.length(); i++) {
+                        JSONObject data = Data.getJSONObject(i);
+                        serviceInfo = data.getJSONArray("serviceInfo");
+                        ContactName = data.getString("ContactName");
+                        ContactEmail = data.getString("ContactEmail");
+                        ContactNo = data.getString("ContactNo");
+                        for (int j = 0; j < serviceInfo.length(); j++) {
+                            all = serviceInfo.getJSONObject(j);
+                            String name = all.getString("Name");
+                            if (name.equals(list.get(position))) {
+                                i = Data.length();
+                                j=serviceInfo.length();
+                            }
+                        }
+                    }
+
+                    Bundle b = new Bundle();
+                    b.putString("Name", all.getString("Name"));
+                    b.putString("Description", all.getString("Description"));
+                    b.putString("ImageLink", all.getString("ImageLink"));
+                    b.putString("CreateDate", all.getString("CreateDate"));
+                    b.putString("ContactName", ContactName);
+                    b.putString("ContactEmail", ContactEmail);
+                    b.putString("ContactNo", ContactNo);
+                    Intent loadService = new Intent(serviceListActivity.this.getApplicationContext(), serviceInfoActivity.class);
+                    loadService.putExtras(b);
+                    startActivity(loadService);
+
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
-                Toast.makeText(getApplicationContext(),
-                        "Click ListItem Number " + position, Toast.LENGTH_LONG)
-                        .show();
+
             }
         });
 
@@ -225,31 +258,9 @@ public class serviceListActivity extends AppCompatActivity {
                             if (drawerItem.getIdentifier() == 1) {
                                 intent = new Intent(serviceListActivity.this, LoginActivity.class);
                             } else if (drawerItem.getIdentifier() == 2) {
-                                intent = new Intent(serviceListActivity.this, serviceListActivity.class);
+                                intent = new Intent(serviceListActivity.this, MainActivity.class);
                             } /*else if (drawerItem.getIdentifier() == 3) {
                                 intent = new Intent(DrawerActivity.this, MultiDrawerActivity.class);
-                            } else if (drawerItem.getIdentifier() == 4) {
-                                intent = new Intent(DrawerActivity.this, NonTranslucentDrawerActivity.class);
-                            } else if (drawerItem.getIdentifier() == 5) {
-                                intent = new Intent(DrawerActivity.this, AdvancedActivity.class);
-                            } else if (drawerItem.getIdentifier() == 7) {
-                                intent = new Intent(DrawerActivity.this, EmbeddedDrawerActivity.class);
-                            } else if (drawerItem.getIdentifier() == 8) {
-                                intent = new Intent(DrawerActivity.this, FullscreenDrawerActivity.class);
-                            } else if (drawerItem.getIdentifier() == 9) {
-                                intent = new Intent(DrawerActivity.this, CustomContainerActivity.class);
-                            } else if (drawerItem.getIdentifier() == 10) {
-                                intent = new Intent(DrawerActivity.this, MenuDrawerActivity.class);
-                            } else if (drawerItem.getIdentifier() == 11) {
-                                intent = new Intent(DrawerActivity.this, MiniDrawerActivity.class);
-                            } else if (drawerItem.getIdentifier() == 12) {
-                                intent = new Intent(DrawerActivity.this, FragmentActivity.class);
-                            } else if (drawerItem.getIdentifier() == 13) {
-                                intent = new Intent(DrawerActivity.this, CollapsingToolbarActivity.class);
-                            } else if (drawerItem.getIdentifier() == 14) {
-                                intent = new Intent(DrawerActivity.this, PersistentDrawerActivity.class);
-                            } else if (drawerItem.getIdentifier() == 15) {
-                                intent = new Intent(DrawerActivity.this, CrossfadeDrawerLayoutActvitiy.class);
                             } else if (drawerItem.getIdentifier() == 20) {
                                 intent = new LibsBuilder()
                                         .withFields(R.string.class.getFields())
@@ -283,10 +294,10 @@ public class serviceListActivity extends AppCompatActivity {
 
         result.updateBadge(4, new StringHolder(10 + ""));
     }
-   // "https://serviceinfo.azurewebsites.net/getServicesByName/"+ category
 
-    public ArrayList<String> GetRequest(String category) throws IOException {
-        ArrayList<String> list = new ArrayList<String>();
+    public JSONArray GetRequest(String category) throws IOException {
+        //ArrayList<String> list = new ArrayList<String>();
+        JSONArray Data = new JSONArray();
         System.out.println("TTTTTTTTTTTTTTTTTT :: " + category);
         URL obj = new URL("https://serviceinfo.azurewebsites.net/getServicesByName/"+ category);
         HttpURLConnection httpConnection = (HttpURLConnection) obj.openConnection();
@@ -309,29 +320,17 @@ public class serviceListActivity extends AppCompatActivity {
             in.close();
             try {
                 JSONObject mainObject = new JSONObject(response.toString());
-                JSONArray Data = mainObject.getJSONArray("Data");
-
-                list.add("Select an item");
-                for (int i = 0; i <= Data.length(); i++) {
-
-                    JSONObject data = Data.getJSONObject(i);
-                    JSONArray serviceInfo = data.getJSONArray("serviceInfo");
-                    for(int j=0; j<serviceInfo.length();j++){
-                        JSONObject actor = serviceInfo.getJSONObject(j);
-                        String name = actor.getString("Name");
-                        list.add(name);
-                    }
-                }
+                Data = mainObject.getJSONArray("Data");
 
             } catch (JSONException e) {
 
             }
 
             //list.add("test1");
-            return list;
+            return Data;
 
         } else {
-            return list;
+            return Data;
         }
     }
     void showLoadingAnimation(String loadingMessage){

@@ -6,24 +6,99 @@
     android:layout_height="match_parent"
     tools:context=".serviceInfoActivity">
 
-    <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="16dp"
-    android:orientation="vertical">
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar4"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/md_light_blue_A700"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:layout_constraintBottom_toTopOf="@+id/framecontainer2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    <ImageView
-        android:id="@+id/image_view"
-        android:layout_width="fill_parent"
-        android:layout_height="300dp"
-        android:layout_marginTop="16dp" />
+    <VideoView
+        android:id="@+id/videoView5"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:text="ViralAndroid.com"
-        android:textSize="24sp"
-        android:gravity="center|bottom"
-        android:textStyle="bold" />
-</LinearLayout>
+    <FrameLayout
+        android:id="@+id/framecontainer2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar4">
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+        </androidx.core.widget.NestedScrollView>
+
+        <ScrollView
+            android:id="@+id/scroll2"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/ServiceTitle1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="10sp"
+                    android:background="#000000"
+                    android:textColor="@color/md_yellow_300"
+                    android:textSize="20sp"
+                    android:hint="Title"
+                    android:textAlignment="center" />
+
+                <ImageView
+                    android:id="@+id/image_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="200sp"
+                    android:layout_margin="8dp"
+                    />
+
+                <TextView
+                    android:id="@+id/ServiceDescription1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:padding="2sp"
+                    android:background="@drawable/searchbox"
+                    android:textSize="20sp"
+                    android:windowSoftInputMode="adjustResize"
+                    android:hint="Description"
+                    android:textAlignment="center" />
+
+                <Button
+                    android:id="@+id/ServiceUploadBtn"
+                    style="?android:textAppearanceSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="10sp"
+                    android:ems="10"
+                    android:background="@drawable/mybutton"
+                    android:padding="2sp"
+                    android:text="Contact Us"
+                    android:textSize="25sp" />
+
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

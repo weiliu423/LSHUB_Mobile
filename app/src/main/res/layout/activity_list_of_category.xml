@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".serviceListActivity">
+    tools:context=".ListOfCategoryActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar4"
@@ -19,7 +19,7 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <ListView
-        android:id="@+id/serviceLists"
+        android:id="@+id/serviceLists1"
         android:layout_width="match_parent"
         android:paddingTop="6dp"
         android:paddingBottom="3dp"
