@@ -47,7 +47,7 @@ public class SelectImageActivity extends AppCompatActivity {
                     } else {
                         imageUri = data.getData();
                     }
-                    Intent intent = new Intent();
+                    Intent intent = new Intent(SelectImageActivity.this, uploadServiceActivity.class);
                     intent.setData(imageUri);
                     setResult(RESULT_OK, intent);
                     finish();
@@ -59,7 +59,8 @@ public class SelectImageActivity extends AppCompatActivity {
     }
 
     public void selectImageInGallery() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("image/*");
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(intent, REQUEST_SELECT_IMAGE);

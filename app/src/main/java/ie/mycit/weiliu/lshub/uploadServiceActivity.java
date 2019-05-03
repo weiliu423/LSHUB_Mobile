@@ -26,6 +26,9 @@ import android.widget.VideoView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.cloudinary.android.MediaManager;
+import com.cloudinary.android.callback.ErrorInfo;
+import com.cloudinary.android.callback.UploadCallback;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.Drawer;
@@ -36,8 +39,13 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.mikepenz.materialdrawer.model.interfaces.Nameable;
 
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import dmax.dialog.SpotsDialog;
 import ie.mycit.weiliu.lshub.utils.AccountHeaderHelper;
@@ -59,13 +67,23 @@ public class uploadServiceActivity extends AppCompatActivity {
     private AccountHeader headerResult = null;
     private Drawer result = null;
     private static final int PROFILE_SETTING = 100000;
-
+    String CLOUDINARY_UPLOAD_PRESET = "lshserviceupload";
+    String CLOUDINARY_UPLOAD_URL = "https://api.cloudinary.com/v1_1/predator423/image/upload/";
+    Uri imageUri;
+    Intent intent;
+    String imgUrl;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_service);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar4);
         setSupportActionBar(toolbar);
+
+
+        intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
+
         //Connecting the view variables with xml views
         bSelectImage = (Button) findViewById(R.id.bSelectImage);
         ivLogoWiseL = (ImageView) findViewById(R.id.ivLogoWiseL);
@@ -87,7 +105,6 @@ public class uploadServiceActivity extends AppCompatActivity {
                 videoview.start();
             }
         });
-
         //Setting click listener on button
         bSelectImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,7 +113,9 @@ public class uploadServiceActivity extends AppCompatActivity {
                 startActivityForResult(intent, REQUEST_SELECT_IMAGE);
             }
         });
-
+        Intent in = getIntent();
+        imageUri = in.getData();
+        System.out.println("VVVVVVVV: "+ imageUri);
         final Spinner spinner = findViewById(R.id.spinner);
 
         // Spinner click listener
@@ -199,45 +218,95 @@ public class uploadServiceActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 showLoadingAnimation("Loading Please wait!");
-                Intent intent = new Intent(uploadServiceActivity.this, SelectImageActivity.class);
-                startActivityForResult(intent, REQUEST_SELECT_IMAGE);
+                try{
+                    POSTRequest();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
         });
 
 
-
-        /*String requestId = MediaManager.get().upload("dog.mp4")
-                .unsigned("preset1")
-                .option("resource_type", "video")
-                .option("folder", "my_folder/my_sub_folder/")
-                .option("public_id", "my_dog")
-                .option("overwrite", true)
-                .option("notification_url", "https://mysite.example.com/notify_endpoint")
-                .dispatch();*/
     }
 
-    /*private void uploadToServer(String filePath) {
-        Retrofit retrofit = NetworkClient.getRetrofitClient(this);
-        UploadAPIs uploadAPIs = retrofit.create(UploadAPIs.class);
-        //Create a file object using file path
-        File file = new File(filePath);
-        // Create a request body with file and image media type
-        RequestBody fileReqBody = RequestBody.create(MediaType.parse("image/*"), file);
-        // Create MultipartBody.Part using file request-body,file name and part name
-        MultipartBody.Part part = MultipartBody.Part.createFormData("upload", file.getName(), fileReqBody);
-        //Create request body with text description and text media type
-        RequestBody description = RequestBody.create(MediaType.parse("text/plain"), "image-type");
-        //
-        Call call = uploadAPIs.uploadImage(part, description);
-        call.enqueue(new Callback() {
-            @Override
-            public void onResponse(Call call, Response response) {
-            }
-            @Override
-            public void onFailure(Call call, Throwable t) {
-            }
-        });
-    }*/
+    public String POSTRequest() throws IOException {
+        Map config = new HashMap();
+        config.put("cloud_name", "predator423");
+        MediaManager.init(this, config);
+        MediaManager.get().upload(imageUri)
+                .unsigned(CLOUDINARY_UPLOAD_PRESET).callback(new UploadCallback() {
+                    @Override
+                    public void onStart(String requestId) {
+                        // your code here
+                    }
+                    @Override
+                    public void onProgress(String requestId, long bytes, long totalBytes) {
+                        // example code starts here
+                        Double progress = (double) bytes/totalBytes;
+                        // post progress to app UI (e.g. progress bar, notification)
+                        // example code ends here
+                    }
+                    @Override
+                    public void onSuccess(String requestId, Map resultData) {
+                        try {
+                            JSONObject mainObject = new JSONObject(resultData);
+                            imgUrl = mainObject.getString("secure_url");
+                            System.out.println("WWWWWWWWWWWWWW: " + imgUrl);
+                            hideLoadingAnimation();
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+
+                    }
+                    @Override
+                    public void onError(String requestId, ErrorInfo error) {
+                        // your code here
+                    }
+                    @Override
+                    public void onReschedule(String requestId, ErrorInfo error) {
+                        // your code here
+                    }})
+                .dispatch();
+
+
+        /*final String POST_PARAMS = "{\n" +
+                "    \"upload_preset\": \""+CLOUDINARY_UPLOAD_PRESET+"\",\r\n" +
+                "    \"file\": \""+imageUri+"\"" + "\n}";
+        System.out.println("TTTTTTTTTTTTT: "+POST_PARAMS);
+        URL obj = new URL(CLOUDINARY_UPLOAD_URL);
+        HttpURLConnection postConnection = (HttpURLConnection) obj.openConnection();
+        postConnection.setRequestMethod("POST");
+        //Header--------------------------------------------------------
+        //postConnection.setRequestProperty("userId", "a1bcdefgh");
+        postConnection.setRequestProperty("Content-Type", "application/json");
+        postConnection.setDoOutput(true);
+        OutputStream os = postConnection.getOutputStream();
+        os.write(POST_PARAMS.getBytes());
+        os.flush();
+        os.close();
+        int responseCode = postConnection.getResponseCode();
+        System.out.println("POST Response Code :  " + responseCode);
+        System.out.println("POST Response Message : " + postConnection.getResponseMessage());
+        if (responseCode == HttpURLConnection.HTTP_CREATED) { //success
+            BufferedReader in = new BufferedReader(new InputStreamReader(
+                    postConnection.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+            while ((inputLine = in .readLine()) != null) {
+                response.append(inputLine);
+            } in .close();
+            // print result
+            System.out.println(response.toString());
+            hideLoadingAnimation();
+            return response.toString();
+
+        } else {
+            System.out.println("POST NOT WORKED");
+            hideLoadingAnimation();
+            return null;
+        }*/
+       return imgUrl;
+    }
 
     void showLoadingAnimation(String loadingMessage){
         //ProgressDialog.show(this, "Loading", "Wait while loading...");
@@ -254,6 +323,7 @@ public class uploadServiceActivity extends AppCompatActivity {
         progress.dismiss();
 
     }
+
     private OnCheckedChangeListener onCheckedChangeListener = new OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
@@ -271,7 +341,7 @@ public class uploadServiceActivity extends AppCompatActivity {
         //Checking the requestCode and resultCode to perform a specific task
         if (requestCode == REQUEST_SELECT_IMAGE && resultCode == RESULT_OK){
             // If image is selected successfully, set the image URI.
-            Uri imageUri = data.getData();
+            imageUri = data.getData();
             if (imageUri != null) {
                 // Show the image on screen.
                 ivLogoWiseL.setImageURI(imageUri);
