@@ -16,7 +16,11 @@
         android:roundIcon="@drawable/icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ListOfCategoryActivity"></activity>
+        <activity
+            android:name=".ScrollingActivity"
+            android:label="@string/title_activity_scrolling"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".ListOfCategoryActivity" />
         <activity android:name=".serviceInfoActivity" />
         <activity android:name=".uploadServiceActivity" />
         <activity android:name=".SplashScreen">

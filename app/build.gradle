@@ -45,7 +45,6 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
     implementation 'com.github.d-max:spots-dialog:0.4@aar'
-    implementation 'com.mcxiaoke.volley:library-aar:1.0.0'
     // used to base on some backwards compatible themes
     // contains util classes to support various android versions, and clean up code
     // comes with the awesome "Holder"-Pattern

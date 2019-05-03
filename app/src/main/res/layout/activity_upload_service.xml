@@ -60,6 +60,43 @@
                     android:layout_margin="8dp"
                     />
 
+                <LinearLayout
+                    android:id="@+id/loginCheck"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/checkService"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="10sp"
+                        android:textColor="@color/md_white_1000"
+                        android:textSize="20sp"
+                        android:textAlignment="center" />
+
+                    <Button
+                        android:id="@+id/redirectLogin"
+                        style="?android:textAppearanceSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="10sp"
+                        android:ems="10"
+                        android:background="@drawable/mybutton"
+                        android:padding="2sp"
+                        android:text="Login"
+                        android:textSize="25sp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/uploadLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:orientation="vertical">
                 <Button
                     android:id="@+id/bSelectImage"
                     android:layout_width="wrap_content"
@@ -71,12 +108,6 @@
                     android:textColor="#FFFFFF"
                     android:background="@color/colorPrimaryDark"
                     />
-                <ProgressBar
-                    android:id="@+id/progressBar3"
-                    style="?android:attr/progressBarStyleLarge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true" />
 
                 <EditText
                     android:id="@+id/ServiceTitle"
@@ -133,7 +164,7 @@
                     android:padding="2sp"
                     android:text="UPLOAD"
                     android:textSize="25sp" />
-
+                </LinearLayout>
             </LinearLayout>
         </ScrollView>
     </FrameLayout>
