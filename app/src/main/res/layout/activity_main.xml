@@ -75,19 +75,34 @@
                         android:textStyle="bold" />
 
                 </LinearLayout>
-
-                <EditText
-
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
+                <SearchView
                     android:id="@+id/searchBox"
                     android:layout_width="match_parent"
                     android:layout_height="45sp"
                     android:layout_margin="5dp"
-                    android:background="@drawable/searchbox"
-                    android:drawableStart="@android:drawable/ic_search_category_default"
+                    android:iconifiedByDefault="false"
                     android:ems="10"
+                    android:background="@color/md_white_1000"
                     android:gravity="center"
-                    android:hint="Find your service"></EditText>
+                    android:queryHint="Find your service" >
+                    <requestFocus />
 
+                </SearchView>
+                <ListView
+                    android:id="@+id/searchList"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:background="@color/md_white_1000"
+                    android:layout_below="@+id/searchBox" />
+                </RelativeLayout>
+            <LinearLayout
+                android:id="@+id/HomeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
                 <TextView
                     android:id="@+id/textView2"
                     android:layout_width="match_parent"
@@ -272,7 +287,7 @@
                         android:background="@color/md_blue_50"
                         android:text="Plumber"
                         android:textSize="12sp" />
-
+                </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>

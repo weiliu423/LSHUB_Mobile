@@ -72,7 +72,7 @@ public class ListOfCategoryActivity extends AppCompatActivity {
                 list = new ArrayList<String>();
                 list.add("Select an item");
                 try {
-                    Data = GetRequest("Courses");
+                    Data = GetRequest();
                     for (int i = 0; i < Data.length(); i++) {
                         String data = Data.getString(i);
                         list.add(data);
@@ -142,7 +142,7 @@ public class ListOfCategoryActivity extends AppCompatActivity {
         result = drawer.getDrawer(this, savedInstanceState, toolbar, profile, headerResult, login, signupView);
     }
 
-    public JSONArray GetRequest(String category) throws IOException {
+    public JSONArray GetRequest() throws IOException {
         //ArrayList<String> list = new ArrayList<String>();
         JSONArray Data = new JSONArray();
         URL obj = new URL("https://serviceinfo.azurewebsites.net/getAllCategories");

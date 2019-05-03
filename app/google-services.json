@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "149005356919",
+    "firebase_url": "https://lshub-6b65b.firebaseio.com",
+    "project_id": "lshub-6b65b",
+    "storage_bucket": "lshub-6b65b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:149005356919:android:db93474a05811bbb",
+        "android_client_info": {
+          "package_name": "ie.mycit.weiliu.lshub"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "149005356919-e0jvpsbc6ml0cjn9hcjnv75b1b0qglvf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEgAlgzFcp9Pu9qIaPyvA7MfXzG2Iqs14"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "149005356919-e0jvpsbc6ml0cjn9hcjnv75b1b0qglvf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

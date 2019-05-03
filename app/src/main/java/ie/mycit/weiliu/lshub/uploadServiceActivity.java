@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -39,9 +41,16 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.mikepenz.materialdrawer.model.interfaces.Nameable;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,10 +77,16 @@ public class uploadServiceActivity extends AppCompatActivity {
     private Drawer result = null;
     private static final int PROFILE_SETTING = 100000;
     String CLOUDINARY_UPLOAD_PRESET = "lshserviceupload";
-    String CLOUDINARY_UPLOAD_URL = "https://api.cloudinary.com/v1_1/predator423/image/upload/";
+    //String CLOUDINARY_UPLOAD_URL = "https://api.cloudinary.com/v1_1/predator423/image/upload/";
     Uri imageUri;
     Intent intent;
     String imgUrl;
+    String ServiceTitleEdit;
+    String ServiceDescriptionEdit;
+    String SpinnerText;
+    List<String> categories;
+    String validate = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,7 +94,7 @@ public class uploadServiceActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar4);
         setSupportActionBar(toolbar);
 
-
+        uploadServiceActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("*/*");
@@ -113,71 +128,123 @@ public class uploadServiceActivity extends AppCompatActivity {
                 startActivityForResult(intent, REQUEST_SELECT_IMAGE);
             }
         });
-        Intent in = getIntent();
-        imageUri = in.getData();
-        System.out.println("VVVVVVVV: "+ imageUri);
+
+        EditText ServiceTitle = findViewById(R.id.ServiceTitle);
+        EditText ServiceDescription = findViewById(R.id.ServiceDescription);
+
+
+
         final Spinner spinner = findViewById(R.id.spinner);
-
-        // Spinner click listener
-        //spinner.setOnItemSelectedListener(this);
-
-        List<String> categories = new ArrayList<String>();
+        categories = new ArrayList<String>();
         categories.add("Select an item...");
-        categories.add("Course");
-        categories.add("Tutor");
-        categories.add("Repairs");
+        final Thread thread = new Thread(new Runnable(){
+            JSONArray Data;
+            public void run() {
+                try {
+                    runOnUiThread(new Runnable() {
 
-        final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
-                this, android.R.layout.simple_spinner_dropdown_item ,categories){
-            @Override
-            public boolean isEnabled(int position){
-                if(position == 0)
-                {
-                    // Disable the first item from Spinner
-                    // First item will be use for hint
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-            @Override
-            public View getDropDownView(int position, View convertView,
-                                        ViewGroup parent) {
-                View view = super.getDropDownView(position, convertView, parent);
-                TextView tv = (TextView) view;
-                if(position == 0){
-                    // Set the hint text color gray
-                    tv.setTextColor(Color.GRAY);
-                }
-                else {
-                    tv.setTextColor(Color.BLACK);
-                }
-                return view;
-            }
-        };
-        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(spinnerArrayAdapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedItemText = (String) parent.getItemAtPosition(position);
-                // If user change the default selection
-                // First item is disable and it is used for hint
-                if(position > 0){
-                    // Notify the selected item text
-                    Toast.makeText
-                            (getApplicationContext(), "Selected : " + selectedItemText, Toast.LENGTH_SHORT)
-                            .show();
-                }
-            }
+                        @Override
+                        public void run() {
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+                            showLoadingAnimation("Validating, Thank you!");
 
+                        }
+                    });
+
+                    Data = GetRequest();
+                    if( Data == null)
+                    {
+                        runOnUiThread(new Runnable() {
+
+                            @Override
+                            public void run() {
+
+                                Toast.makeText(uploadServiceActivity.this.getApplicationContext(), "An Error occurred", Toast.LENGTH_LONG).show();
+                                hideLoadingAnimation();
+
+                            }
+                        });
+
+                    }else {
+                        try{
+                            for (int i = 0; i < Data.length(); i++) {
+                                String data = Data.getString(i);
+                                categories.add(data);
+                            }
+                        }catch (Exception e){
+
+                        }
+                        runOnUiThread(new Runnable() {
+
+                            @Override
+                            public void run() {
+
+                                final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
+                                        uploadServiceActivity.this, android.R.layout.simple_spinner_dropdown_item ,categories){
+                                            @Override
+                                            public boolean isEnabled(int position){
+                                                if(position == 0)
+                                                {
+                                                    // Disable the first item from Spinner
+                                                    // First item will be use for hint
+                                                    return false;
+                                                }
+                                                else
+                                                {
+                                                    return true;
+                                                }
+                                            }
+                                            @Override
+                                            public View getDropDownView(int position, View convertView,
+                                                                        ViewGroup parent) {
+                                                View view = super.getDropDownView(position, convertView, parent);
+                                                TextView tv = (TextView) view;
+                                                if(position == 0){
+                                                    // Set the hint text color gray
+                                                    tv.setTextColor(Color.GRAY);
+                                                }
+                                                else {
+                                                    tv.setTextColor(Color.BLACK);
+                                                }
+                                                return view;
+                                            }
+                                        };
+                                spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                                spinner.setAdapter(spinnerArrayAdapter);
+                                spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                    @Override
+                                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                        String selectedItemText = (String) parent.getItemAtPosition(position);
+                                        // If user change the default selection
+                                        // First item is disable and it is used for hint
+                                        if(position > 0){
+                                            // Notify the selected item text
+
+                                            SpinnerText = selectedItemText;
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onNothingSelected(AdapterView<?> parent) {
+
+                                    }
+                                });
+                                hideLoadingAnimation();
+                            }
+                        });
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
+
+        thread.start();
+
+
+
+
+        //----------------------------------------------------------------------------------------------
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         DrawerHelper drawer = new DrawerHelper();
         AccountHeaderHelper accountHeaderHelper = new AccountHeaderHelper();
@@ -188,6 +255,8 @@ public class uploadServiceActivity extends AppCompatActivity {
         TextView checkService = findViewById(R.id.checkService);
         LinearLayout uploadLayout = findViewById(R.id.uploadLayout);
         Button redirectLogin = findViewById(R.id.redirectLogin);
+
+        //-----------------------------------------------------------------------------------------------
         IProfile profile = new ProfileDrawerItem();
         if (utils.getEmail(this) != null ){
             profile = new ProfileDrawerItem().withName("Hi "+utils.getEmail(this)).withIcon(getResources().getDrawable(R.drawable.profile3));
@@ -209,6 +278,7 @@ public class uploadServiceActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
         headerResult = accountHeaderHelper.header(this,savedInstanceState);
         headerResult.addProfiles(profile);
         result = drawer.getDrawer(this, savedInstanceState, toolbar, profile, headerResult, login, signupView);
@@ -218,18 +288,90 @@ public class uploadServiceActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 showLoadingAnimation("Loading Please wait!");
-                try{
-                    POSTRequest();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
+                ServiceTitleEdit = ServiceTitle.getText().toString();
+                ServiceDescriptionEdit = ServiceDescription.getText().toString();
+                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                        .permitAll().build();
+                StrictMode.setThreadPolicy(policy);
+                Thread thread1 = new Thread(new Runnable(){
+                    public void run() {
+                        try {
+                            String response = POSTRequest();
+
+                            if(response != null) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getApplicationContext(),
+                                                "Service successfully uploaded!", Toast.LENGTH_LONG)
+                                                .show();
+                                        ServiceTitle.getText().clear();
+                                        ServiceDescription.getText().clear();
+                                        ivLogoWiseL.setImageResource(0);
+                                        hideLoadingAnimation();
+                                    }
+                                });
+                            }else{
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getApplicationContext(),
+                                                "Failed to upload, please check input!", Toast.LENGTH_LONG)
+                                                .show();
+                                        hideLoadingAnimation();
+                                    }
+                                });
+                            }
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+                thread1.start();
             }
         });
 
 
     }
+    public JSONArray GetRequest() throws IOException {
+        //ArrayList<String> list = new ArrayList<String>();
+        JSONArray Data = new JSONArray();
+        URL obj = new URL("https://serviceinfo.azurewebsites.net/getAllCategories");
+        HttpURLConnection httpConnection = (HttpURLConnection) obj.openConnection();
+        httpConnection.setRequestMethod("GET");
+        httpConnection.setUseCaches(false);
+        httpConnection.setAllowUserInteraction(false);
+        httpConnection.setConnectTimeout(100000);
+        httpConnection.setReadTimeout(100000);
+        httpConnection.connect();
+        int responseCode = httpConnection.getResponseCode();
+        System.out.println("Response Code :: " + responseCode);
+        if (responseCode == HttpURLConnection.HTTP_OK) { // connection ok
+            BufferedReader in = new BufferedReader(new InputStreamReader( httpConnection.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
 
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+            try {
+                JSONObject mainObject = new JSONObject(response.toString());
+                Data = mainObject.getJSONArray("Data");
+
+            } catch (JSONException e) {
+
+            }
+            return Data;
+
+        } else {
+            return null;
+        }
+    }
     public String POSTRequest() throws IOException {
+
+        PreferenceUtils utils = new PreferenceUtils();
         Map config = new HashMap();
         config.put("cloud_name", "predator423");
         MediaManager.init(this, config);
@@ -251,8 +393,46 @@ public class uploadServiceActivity extends AppCompatActivity {
                         try {
                             JSONObject mainObject = new JSONObject(resultData);
                             imgUrl = mainObject.getString("secure_url");
-                            System.out.println("WWWWWWWWWWWWWW: " + imgUrl);
-                            hideLoadingAnimation();
+
+                            final String POST_PARAMS = "{\n" +
+                                    "    \"Name\": \""+ServiceTitleEdit+"\",\r\n" +
+                                    "    \"TypeName\": \""+SpinnerText+"\",\r\n" +
+                                    "    \"Description\": \""+ServiceDescriptionEdit+"\",\r\n" +
+                                    "    \"ImageLink\": \""+imgUrl+"\",\r\n" +
+                                    "    \"AccountName\": \""+utils.getEmail(uploadServiceActivity.this)+"\"" + "\n}";
+
+                            System.out.println("TTTTTTTTTTTTT: "+POST_PARAMS);
+                            URL obj = new URL("https://serviceinfo.azurewebsites.net/createService");
+                            HttpURLConnection postConnection = (HttpURLConnection) obj.openConnection();
+                            postConnection.setRequestMethod("POST");
+                            //Header--------------------------------------------------------
+                            //postConnection.setRequestProperty("userId", "a1bcdefgh");
+                            postConnection.setRequestProperty("Content-Type", "application/json");
+                            postConnection.setDoOutput(true);
+                            OutputStream os = postConnection.getOutputStream();
+                            os.write(POST_PARAMS.getBytes());
+                            os.flush();
+                            os.close();
+                            int responseCode = postConnection.getResponseCode();
+                            System.out.println("POST Response Code :  " + responseCode);
+                            System.out.println("POST Response Message : " + postConnection.getResponseMessage());
+                            if (responseCode == HttpURLConnection.HTTP_CREATED) { //success
+                                BufferedReader in = new BufferedReader(new InputStreamReader(
+                                        postConnection.getInputStream()));
+                                String inputLine;
+                                StringBuffer response = new StringBuffer();
+                                while ((inputLine = in .readLine()) != null) {
+                                    response.append(inputLine);
+                                } in .close();
+                                // print result
+                                System.out.println(response.toString());
+                                validate = "true";
+
+                            } else {
+                                System.out.println("POST NOT WORKED");
+                                validate = null;
+                            }
+
                         }catch (Exception e){
                             e.printStackTrace();
                         }
@@ -269,43 +449,8 @@ public class uploadServiceActivity extends AppCompatActivity {
                 .dispatch();
 
 
-        /*final String POST_PARAMS = "{\n" +
-                "    \"upload_preset\": \""+CLOUDINARY_UPLOAD_PRESET+"\",\r\n" +
-                "    \"file\": \""+imageUri+"\"" + "\n}";
-        System.out.println("TTTTTTTTTTTTT: "+POST_PARAMS);
-        URL obj = new URL(CLOUDINARY_UPLOAD_URL);
-        HttpURLConnection postConnection = (HttpURLConnection) obj.openConnection();
-        postConnection.setRequestMethod("POST");
-        //Header--------------------------------------------------------
-        //postConnection.setRequestProperty("userId", "a1bcdefgh");
-        postConnection.setRequestProperty("Content-Type", "application/json");
-        postConnection.setDoOutput(true);
-        OutputStream os = postConnection.getOutputStream();
-        os.write(POST_PARAMS.getBytes());
-        os.flush();
-        os.close();
-        int responseCode = postConnection.getResponseCode();
-        System.out.println("POST Response Code :  " + responseCode);
-        System.out.println("POST Response Message : " + postConnection.getResponseMessage());
-        if (responseCode == HttpURLConnection.HTTP_CREATED) { //success
-            BufferedReader in = new BufferedReader(new InputStreamReader(
-                    postConnection.getInputStream()));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
-            while ((inputLine = in .readLine()) != null) {
-                response.append(inputLine);
-            } in .close();
-            // print result
-            System.out.println(response.toString());
-            hideLoadingAnimation();
-            return response.toString();
 
-        } else {
-            System.out.println("POST NOT WORKED");
-            hideLoadingAnimation();
-            return null;
-        }*/
-       return imgUrl;
+       return validate;
     }
 
     void showLoadingAnimation(String loadingMessage){

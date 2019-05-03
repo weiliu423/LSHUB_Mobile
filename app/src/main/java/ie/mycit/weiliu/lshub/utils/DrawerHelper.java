@@ -31,6 +31,7 @@ import ie.mycit.weiliu.lshub.ListOfCategoryActivity;
 import ie.mycit.weiliu.lshub.LoginActivity;
 import ie.mycit.weiliu.lshub.MainActivity;
 import ie.mycit.weiliu.lshub.SignupActivity;
+import ie.mycit.weiliu.lshub.facialActivity;
 import ie.mycit.weiliu.lshub.uploadServiceActivity;
 
 public class DrawerHelper {
@@ -63,16 +64,17 @@ public class DrawerHelper {
                         new PrimaryDrawerItem().withName("Home").withIcon(FontAwesome.Icon.faw_home).withIdentifier(3).withSelectable(false),
                         new ExpandableDrawerItem().withName("Dashboard").withIcon(GoogleMaterial.Icon.gmd_dashboard).withIdentifier(19).withSelectable(false).withSubItems(
                                 new SecondaryDrawerItem().withName("Add my service").withLevel(2).withIcon(Octicons.Icon.oct_tools).withIdentifier(11).withSelectable(false),
-                                new SecondaryDrawerItem().withName("View my profile").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_supervisor_account).withIdentifier(2002).withSelectable(false),
-                                new SecondaryDrawerItem().withName("View my reviews").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_rate_review).withIdentifier(2003).withSelectable(false)
+                                new SecondaryDrawerItem().withName("View my profile").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_supervisor_account).withIdentifier(4).withSelectable(false)
+                                //,new SecondaryDrawerItem().withName("View my reviews").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_rate_review).withIdentifier(2003).withSelectable(false)
                         ),
-                        new SectionDrawerItem().withName("Contact us"),
-                        new PrimaryDrawerItem().withName("Chat with us").withIcon(GoogleMaterial.Icon.gmd_report_problem).withIdentifier(20).withSelectable(false),
-                        new PrimaryDrawerItem().withName("Feedback").withIcon(GoogleMaterial.Icon.gmd_feedback).withIdentifier(21).withSelectable(false).withTag("Bullhorn"),
                         new SectionDrawerItem().withName("Services"),
                         new PrimaryDrawerItem().withName("View services").withIcon(Octicons.Icon.oct_tools).withIdentifier(10).withSelectable(false),
                         new DividerDrawerItem(),
-                        new SwitchDrawerItem().withName("Location").withIcon(Octicons.Icon.oct_location).withChecked(true).withOnCheckedChangeListener(onCheckedChangeListener)
+                        new SwitchDrawerItem().withName("Location").withIcon(Octicons.Icon.oct_location).withChecked(true).withOnCheckedChangeListener(onCheckedChangeListener),
+                        new PrimaryDrawerItem().withName("Face Detection").withIcon(Octicons.Icon.oct_tools).withIdentifier(12).withSelectable(false),
+                        new SectionDrawerItem().withName("Contact us"),
+                        new PrimaryDrawerItem().withName("Chat with us").withIcon(GoogleMaterial.Icon.gmd_report_problem).withIdentifier(20).withSelectable(false),
+                        new PrimaryDrawerItem().withName("Feedback").withIcon(GoogleMaterial.Icon.gmd_feedback).withIdentifier(21).withSelectable(false).withTag("Bullhorn")
                 ) // add the items we want to use with our Drawer
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -101,7 +103,7 @@ public class DrawerHelper {
                             } else if (drawerItem.getIdentifier() == 11) {
                                 intent = new Intent(context, uploadServiceActivity.class);
                             } else if (drawerItem.getIdentifier() == 12) {
-                                intent = new Intent(context, uploadServiceActivity.class);
+                                intent = new Intent(context, facialActivity.class);
                             }else if (drawerItem.getIdentifier() == 100) {
                                 PreferenceUtils.savePassword(null, context);
                                 PreferenceUtils.saveEmail(null, context);

@@ -1,6 +1,7 @@
 package ie.mycit.weiliu.lshub;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -48,7 +49,7 @@ public class SignupActivity extends AppCompatActivity {
     private VideoView videoview;
     private Uri uri;
     SpotsDialog progress;
-
+    PrimaryDrawerItem signupView = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +80,32 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
         Button signupBtn = findViewById(R.id.signupBtnPage);
+        DrawerHelper drawer = new DrawerHelper();
+        AccountHeaderHelper accountHeaderHelper = new AccountHeaderHelper();
+        PrimaryDrawerItem login = null;
+        PreferenceUtils utils = new PreferenceUtils();
+        IProfile profile = new ProfileDrawerItem();
+        if (utils.getEmail(this) != null ){
+            profile = new ProfileDrawerItem().withName("Hi "+utils.getEmail(this)).withIcon(getResources().getDrawable(R.drawable.profile3));
+            signupView = new PrimaryDrawerItem().withName("Logout").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(100).withSelectable(false);
+        }else{
+            profile = new ProfileDrawerItem().withName("Welcome").withEmail("Guest").withIcon(GoogleMaterial.Icon.gmd_account_circle);
+            login = new PrimaryDrawerItem().withName("Login").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(1).withSelectable(false);
+            signupView = new PrimaryDrawerItem().withName("Sign up").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(2).withSelectable(false);
+        }
+
+        headerResult = accountHeaderHelper.header(this,savedInstanceState);
+        headerResult.addProfiles(profile);
+        result = drawer.getDrawer(this, savedInstanceState, toolbar, profile, headerResult, login, signupView);
+
+        result.getActionBarDrawerToggle().setToolbarNavigationClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                result.getActionBarDrawerToggle().getToolbarNavigationClickListener().onClick(view);
+                Toast.makeText(getApplicationContext(),"clicked",Toast.LENGTH_SHORT).show();
+                hideKeyboard(view);
+            }
+        });
 
         final EditText firstName = (EditText)findViewById(R.id.firstName);
         final EditText lastName = (EditText)findViewById(R.id.surName);
@@ -107,9 +134,9 @@ public class SignupActivity extends AppCompatActivity {
                             String LastName = lastName.getText().toString();
                             String Email = email.getText().toString();
 
-                            String result = POSTRequest(UserName, Password, FirstName, LastName, Email);
+                            String result1 = POSTRequest(UserName, Password, FirstName, LastName, Email);
                             System.out.println("------------"+ result + "-------------");
-                            if( result == null)
+                            if( result1 == null)
                             {
                                 runOnUiThread(new Runnable() {
 
@@ -130,11 +157,21 @@ public class SignupActivity extends AppCompatActivity {
 
                                         Toast.makeText(SignupActivity.this.getApplicationContext(), "Success, Account created", Toast.LENGTH_LONG).show();
                                         hideLoadingAnimation();
+
+                                        headerResult.addProfiles(new ProfileDrawerItem().withName("Hi "+UserName).withIcon(getResources().getDrawable(R.drawable.profile3)));
+                                        PreferenceUtils.saveEmail(username.getText().toString(), SignupActivity.this);
+                                        PreferenceUtils.savePassword(password.getText().toString(), SignupActivity.this);
+                                        signupView.withName("Logout").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(100).withSelectable(false);
+                                        result.updateItem(signupView);
                                         username.getText().clear();
                                         password.getText().clear();
                                         firstName.getText().clear();
                                         lastName.getText().clear();
                                         email.getText().clear();
+                                        Intent logged = new Intent(SignupActivity.this.getApplicationContext(), MainActivity.class);
+                                        startActivity(logged);
+                                        finish();
+
                                     }
                                 });
                             }
@@ -153,33 +190,7 @@ public class SignupActivity extends AppCompatActivity {
         username.setFocusable(false);
         username.setFocusableInTouchMode(true);
         username.setFocusable(true);
-        DrawerHelper drawer = new DrawerHelper();
-        AccountHeaderHelper accountHeaderHelper = new AccountHeaderHelper();
-        PrimaryDrawerItem login = null;
-        PrimaryDrawerItem signupView = null;
-        PreferenceUtils utils = new PreferenceUtils();
-        IProfile profile = new ProfileDrawerItem();
-        if (utils.getEmail(this) != null ){
-            profile = new ProfileDrawerItem().withName("Hi "+utils.getEmail(this)).withIcon(getResources().getDrawable(R.drawable.profile3));
-            signupView = new PrimaryDrawerItem().withName("Logout").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(100).withSelectable(false);
-        }else{
-            profile = new ProfileDrawerItem().withName("Welcome").withEmail("Guest").withIcon(GoogleMaterial.Icon.gmd_account_circle);
-            login = new PrimaryDrawerItem().withName("Login").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(1).withSelectable(false);
-            signupView = new PrimaryDrawerItem().withName("Sign up").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(2).withSelectable(false);
-        }
 
-        headerResult = accountHeaderHelper.header(this,savedInstanceState);
-        headerResult.addProfiles(profile);
-        result = drawer.getDrawer(this, savedInstanceState, toolbar, profile, headerResult, login, signupView);
-
-        result.getActionBarDrawerToggle().setToolbarNavigationClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                result.getActionBarDrawerToggle().getToolbarNavigationClickListener().onClick(view);
-                Toast.makeText(getApplicationContext(),"clicked",Toast.LENGTH_SHORT).show();
-                hideKeyboard(view);
-            }
-        });
 
         //only set the active selection or active profile if we do not recreate the activity
 

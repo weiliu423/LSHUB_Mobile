@@ -15,14 +15,30 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/icon"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity
-            android:name=".ScrollingActivity"
-            android:label="@string/title_activity_scrolling"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+        android:theme="@style/AppTheme"
+        android:windowSoftInputMode="stateVisible|adjustResize">
+        <activity android:name=".BaseActivity"></activity>
+        <activity android:name=".facialActivity" />
+
+        <meta-data
+            android:name="com.google.firebase.ml.vision.DEPENDENCIES"
+            android:value="face" /> <!-- To use multiple models: android:value="face,model2,model3" -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider" />
+        </provider>
+
+        <activity android:name=".viewProfileActivity" />
         <activity android:name=".ListOfCategoryActivity" />
         <activity android:name=".serviceInfoActivity" />
-        <activity android:name=".uploadServiceActivity" />
+        <activity
+            android:name=".uploadServiceActivity"
+            android:windowSoftInputMode="adjustPan|adjustResize" />
         <activity android:name=".SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,7 +48,6 @@
         </activity>
         <activity android:name=".LoginActivity" />
         <activity android:name=".SignupActivity" />
-        <activity android:name=".ServiceActivity" />
         <activity android:name=".serviceListActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".SelectImageActivity" />

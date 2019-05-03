@@ -3,6 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:windowSoftInputMode="stateVisible|adjustResize"
+    android:imeOptions="actionSend|flagNoEnterAction"
     android:layout_height="match_parent"
     tools:context=".uploadServiceActivity">
 
@@ -13,7 +15,7 @@
         android:background="@color/md_light_blue_A700"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:layout_constraintBottom_toTopOf="@+id/framecontainer1"
+        app:layout_constraintBottom_toTopOf="@+id/framecontainer2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -37,8 +39,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fillViewport="true">
-
-        </androidx.core.widget.NestedScrollView>
 
         <ScrollView
             android:id="@+id/scroll2"
@@ -148,7 +148,6 @@
                     android:ems="10"
                     android:background="@drawable/searchbox"
                     android:textSize="25sp"
-                    android:windowSoftInputMode="adjustResize"
                     android:hint="Description"
                     android:textAlignment="center" />
 
@@ -167,6 +166,7 @@
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>
+        </androidx.core.widget.NestedScrollView>
     </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
