@@ -30,6 +30,7 @@ import com.mikepenz.octicons_typeface_library.Octicons;
 import ie.mycit.weiliu.lshub.ListOfCategoryActivity;
 import ie.mycit.weiliu.lshub.LoginActivity;
 import ie.mycit.weiliu.lshub.MainActivity;
+import ie.mycit.weiliu.lshub.MapsActivity;
 import ie.mycit.weiliu.lshub.SignupActivity;
 import ie.mycit.weiliu.lshub.facialActivity;
 import ie.mycit.weiliu.lshub.uploadServiceActivity;
@@ -69,6 +70,7 @@ public class DrawerHelper {
                         ),
                         new SectionDrawerItem().withName("Services"),
                         new PrimaryDrawerItem().withName("View services").withIcon(Octicons.Icon.oct_tools).withIdentifier(10).withSelectable(false),
+                        new PrimaryDrawerItem().withName("View services within 1km").withIcon(Octicons.Icon.oct_tools).withIdentifier(13).withSelectable(false),
                         new DividerDrawerItem(),
                         new SwitchDrawerItem().withName("Location").withIcon(Octicons.Icon.oct_location).withChecked(true).withOnCheckedChangeListener(onCheckedChangeListener),
                         new PrimaryDrawerItem().withName("Face Detection").withIcon(Octicons.Icon.oct_tools).withIdentifier(12).withSelectable(false),
@@ -104,6 +106,8 @@ public class DrawerHelper {
                                 intent = new Intent(context, uploadServiceActivity.class);
                             } else if (drawerItem.getIdentifier() == 12) {
                                 intent = new Intent(context, facialActivity.class);
+                            }else if (drawerItem.getIdentifier() == 13) {
+                                intent = new Intent(context, MapsActivity.class);
                             }else if (drawerItem.getIdentifier() == 100) {
                                 PreferenceUtils.savePassword(null, context);
                                 PreferenceUtils.saveEmail(null, context);

@@ -13,4 +13,5 @@
     <string name="action_camera">Camera</string>
     <string name="camera_denied">This app need to access the camera.</string>
     <string name="error">Cannot access ML Kit</string>
+    <string name="title_activity_maps">Map</string>
 </resources>
