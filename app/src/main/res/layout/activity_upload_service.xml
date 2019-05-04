@@ -3,8 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:windowSoftInputMode="stateVisible|adjustResize"
-    android:imeOptions="actionSend|flagNoEnterAction"
     android:layout_height="match_parent"
     tools:context=".uploadServiceActivity">
 
@@ -15,36 +13,21 @@
         android:background="@color/md_light_blue_A700"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:layout_constraintBottom_toTopOf="@+id/framecontainer2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
 
     <VideoView
         android:id="@+id/videoView3"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <FrameLayout
-        android:id="@+id/framecontainer2"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar4">
-
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fillViewport="true">
-
-        <ScrollView
-            android:id="@+id/scroll2"
-            android:gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -53,12 +36,6 @@
                 android:layout_gravity="center_vertical|center_horizontal"
                 android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/ivLogoWiseL"
-                    android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    android:layout_margin="8dp"
-                    />
 
                 <LinearLayout
                     android:id="@+id/loginCheck"
@@ -97,11 +74,21 @@
                     android:gravity="center"
                     android:layout_gravity="center_vertical|center_horizontal"
                     android:orientation="vertical">
+                    <ImageView
+                        android:id="@+id/ivLogoWiseL"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:layout_margin="8dp"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:scaleType="fitXY"
+                        />
                 <Button
                     android:id="@+id/bSelectImage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/ivLogoWiseL"
+                    app:layout_constraintTop_toTopOf="@+id/ivLogoWiseL"
                     android:layout_centerHorizontal="true"
                     android:padding="8dp"
                     android:text="SELECT IMAGE"
@@ -119,7 +106,6 @@
                     android:ems="10"
                     android:background="@drawable/searchbox"
                     android:textSize="25sp"
-                    android:windowSoftInputMode="adjustResize"
                     android:hint="Title"
                     android:textAlignment="center" />
 
@@ -165,8 +151,6 @@
                     android:textSize="25sp" />
                 </LinearLayout>
             </LinearLayout>
-        </ScrollView>
         </androidx.core.widget.NestedScrollView>
-    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

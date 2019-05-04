@@ -64,7 +64,7 @@
         <activity android:name=".serviceInfoActivity" />
         <activity
             android:name=".uploadServiceActivity"
-            android:windowSoftInputMode="adjustPan|adjustResize" />
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

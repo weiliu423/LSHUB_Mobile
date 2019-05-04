@@ -36,9 +36,9 @@
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:layout_constraintBottom_toTopOf="@+id/framecontainer2"
             android:fillViewport="true">
 
-        </androidx.core.widget.NestedScrollView>
 
         <ScrollView
             android:id="@+id/scroll2"
@@ -64,7 +64,16 @@
                     android:textSize="20sp"
                     android:hint="Title"
                     android:textAlignment="center" />
-
+                <TextView
+                    android:id="@+id/ServiceLocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="#000000"
+                    android:textColor="@color/md_yellow_300"
+                    android:textSize="20sp"
+                    android:hint="Location"
+                    android:textAlignment="center" />
                 <ImageView
                     android:id="@+id/image_view"
                     android:layout_width="match_parent"
@@ -99,6 +108,7 @@
 
             </LinearLayout>
         </ScrollView>
+        </androidx.core.widget.NestedScrollView>
     </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

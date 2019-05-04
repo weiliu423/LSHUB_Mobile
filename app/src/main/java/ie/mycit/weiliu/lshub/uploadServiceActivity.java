@@ -3,6 +3,8 @@ package ie.mycit.weiliu.lshub;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -54,11 +56,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import dmax.dialog.SpotsDialog;
 import ie.mycit.weiliu.lshub.utils.AccountHeaderHelper;
 import ie.mycit.weiliu.lshub.utils.DrawerHelper;
+import ie.mycit.weiliu.lshub.utils.GPSTracker;
 import ie.mycit.weiliu.lshub.utils.PreferenceUtils;
 
 public class uploadServiceActivity extends AppCompatActivity {
@@ -86,6 +90,8 @@ public class uploadServiceActivity extends AppCompatActivity {
     String SpinnerText;
     List<String> categories;
     String validate = "";
+    String city = "";
+    String country = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +99,27 @@ public class uploadServiceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_upload_service);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar4);
         setSupportActionBar(toolbar);
+        GPSTracker mGPS = new GPSTracker(this);
+        Geocoder geoCoder = new Geocoder(getBaseContext(), Locale.getDefault());
+
+
+        if(mGPS.canGetLocation ){
+            mGPS.getLocation();
+            try {
+                List<Address> addresses = geoCoder.getFromLocation(mGPS.getLatitude(), mGPS.getLongitude(), 1);
+
+                if (addresses.size() > 0) {
+                    city = addresses.get(0).getAdminArea();
+                    country = addresses.get(0).getCountryName();
+                }
+
+            }catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }else{
+            System.out.println("Unable");
+        }
+
 
         uploadServiceActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
@@ -245,7 +272,7 @@ public class uploadServiceActivity extends AppCompatActivity {
 
 
         //----------------------------------------------------------------------------------------------
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         DrawerHelper drawer = new DrawerHelper();
         AccountHeaderHelper accountHeaderHelper = new AccountHeaderHelper();
         PrimaryDrawerItem login = null;
@@ -399,7 +426,8 @@ public class uploadServiceActivity extends AppCompatActivity {
                                     "    \"TypeName\": \""+SpinnerText+"\",\r\n" +
                                     "    \"Description\": \""+ServiceDescriptionEdit+"\",\r\n" +
                                     "    \"ImageLink\": \""+imgUrl+"\",\r\n" +
-                                    "    \"AccountName\": \""+utils.getEmail(uploadServiceActivity.this)+"\"" + "\n}";
+                                    "    \"AccountName\": \""+utils.getEmail(uploadServiceActivity.this)+"\",\r\n" +
+                                    "    \"ServiceLocation\": \""+city +", "+country+"\"" + "\n}";
 
                             System.out.println("TTTTTTTTTTTTT: "+POST_PARAMS);
                             URL obj = new URL("https://serviceinfo.azurewebsites.net/createService");
@@ -452,7 +480,6 @@ public class uploadServiceActivity extends AppCompatActivity {
 
        return validate;
     }
-
     void showLoadingAnimation(String loadingMessage){
         //ProgressDialog.show(this, "Loading", "Wait while loading...");
         progress = new SpotsDialog(this,  R.style.Custom);
@@ -462,13 +489,11 @@ public class uploadServiceActivity extends AppCompatActivity {
         progress.show();
 
     }
-
     void hideLoadingAnimation(){
         // dismiss the dialog
         progress.dismiss();
 
     }
-
     private OnCheckedChangeListener onCheckedChangeListener = new OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
@@ -498,7 +523,6 @@ public class uploadServiceActivity extends AppCompatActivity {
         InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
-
     @Override
     protected void onResume() {
         super.onResume();

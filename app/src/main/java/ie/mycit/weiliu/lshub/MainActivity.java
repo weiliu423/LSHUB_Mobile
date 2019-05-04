@@ -128,13 +128,134 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         });
 
         Button course = findViewById(R.id.btn1);
+        Button Tutor = findViewById(R.id.btn2);
+        Button Repairs = findViewById(R.id.btn3);
+        Button Travel = findViewById(R.id.btn4);
+        Button Wellness = findViewById(R.id.btn5);
+        Button Electrician = findViewById(R.id.btn6);
+        Button ChildCare = findViewById(R.id.btn7);
+        Button Cleaning = findViewById(R.id.btn8);
+        Button Cooks = findViewById(R.id.btn9);
+        Button Electrician1 = findViewById(R.id.btn10);
+        Button Painters = findViewById(R.id.btn11);
+        Button Plumber = findViewById(R.id.btn12);
+
         list = (ListView) findViewById(R.id.searchList);
         course.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Bundle b = new Bundle();
-                // Storing data into bundle
                 b.putString("Name", "Courses");
+                Intent coursepage = new Intent(MainActivity.this, serviceListActivity.class);
+                coursepage.putExtras(b);
+                startActivity(coursepage);
+            }
+        });
+        Tutor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle b = new Bundle();
+                b.putString("Name", "Tutors");
+                Intent coursepage = new Intent(MainActivity.this, serviceListActivity.class);
+                coursepage.putExtras(b);
+                startActivity(coursepage);
+            }
+        });
+        Repairs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle b = new Bundle();
+                b.putString("Name", "Repairs");
+                Intent coursepage = new Intent(MainActivity.this, serviceListActivity.class);
+                coursepage.putExtras(b);
+                startActivity(coursepage);
+            }
+        });
+        Travel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle b = new Bundle();
+                b.putString("Name", "Travel");
+                Intent coursepage = new Intent(MainActivity.this, serviceListActivity.class);
+                coursepage.putExtras(b);
+                startActivity(coursepage);
+            }
+        });
+        Wellness.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle b = new Bundle();
+                b.putString("Name", "Wellness");
+                Intent coursepage = new Intent(MainActivity.this, serviceListActivity.class);
+                coursepage.putExtras(b);
+                startActivity(coursepage);
+            }
+        });
+        Electrician.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle b = new Bundle();
+                b.putString("Name", "Electrician");
+                Intent coursepage = new Intent(MainActivity.this, serviceListActivity.class);
+                coursepage.putExtras(b);
+                startActivity(coursepage);
+            }
+        });
+        ChildCare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle b = new Bundle();
+                b.putString("Name", "ChildCare");
+                Intent coursepage = new Intent(MainActivity.this, serviceListActivity.class);
+                coursepage.putExtras(b);
+                startActivity(coursepage);
+            }
+        });
+        Cleaning.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle b = new Bundle();
+                b.putString("Name", "Cleaning");
+                Intent coursepage = new Intent(MainActivity.this, serviceListActivity.class);
+                coursepage.putExtras(b);
+                startActivity(coursepage);
+            }
+        });
+        Cooks.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle b = new Bundle();
+                b.putString("Name", "Cooks");
+                Intent coursepage = new Intent(MainActivity.this, serviceListActivity.class);
+                coursepage.putExtras(b);
+                startActivity(coursepage);
+            }
+        });
+        Electrician1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle b = new Bundle();
+                b.putString("Name", "Electrician");
+                Intent coursepage = new Intent(MainActivity.this, serviceListActivity.class);
+                coursepage.putExtras(b);
+                startActivity(coursepage);
+            }
+        });
+        Painters.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle b = new Bundle();
+                b.putString("Name", "Painters");
+                Intent coursepage = new Intent(MainActivity.this, serviceListActivity.class);
+                coursepage.putExtras(b);
+                startActivity(coursepage);
+            }
+        });
+        Plumber.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle b = new Bundle();
+                b.putString("Name", "Plumber");
                 Intent coursepage = new Intent(MainActivity.this, serviceListActivity.class);
                 coursepage.putExtras(b);
                 startActivity(coursepage);
@@ -144,10 +265,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
             public void run() {
                 try {
-
-
                     Data = GetRequest();
-
+                    System.out.println("Data array ----------------- "+ Data.toString());
                     if( Data == null)
                     {
                         runOnUiThread(new Runnable() {
@@ -242,13 +361,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                             }
                         }
                     }
-                    System.out.println("ArrayList  ----------------- "+ arraylist.get(position));
 
                     Bundle b = new Bundle();
                     b.putString("Name", all.getString("Name"));
                     b.putString("Description", all.getString("Description"));
                     b.putString("ImageLink", all.getString("ImageLink"));
                     b.putString("CreateDate", all.getString("CreateDate"));
+                    b.putString("ServiceLocation", all.getString("ServiceLocation"));
                     b.putString("ContactName", ContactName);
                     b.putString("ContactEmail", ContactEmail);
                     b.putString("ContactNo", ContactNo);

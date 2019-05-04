@@ -35,6 +35,8 @@ import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.mikepenz.materialdrawer.model.interfaces.Nameable;
 
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import ie.mycit.weiliu.lshub.utils.AccountHeaderHelper;
 import ie.mycit.weiliu.lshub.utils.DrawerHelper;
@@ -75,26 +77,35 @@ public class serviceInfoActivity extends AppCompatActivity {
             }
         });
         TextView serviceTitle = findViewById(R.id.ServiceTitle1);
+        TextView ServiceLocation = findViewById(R.id.ServiceLocation);
         serviceTitle.setBackgroundColor(Color.TRANSPARENT);
+        ServiceLocation.setBackgroundColor(Color.TRANSPARENT);
         TextView ServiceDescription = findViewById(R.id.ServiceDescription1);
-
+        SimpleDateFormat curFormater = new SimpleDateFormat("yyyy-MM-dd");
         Intent in = getIntent();
         Bundle b = in.getExtras();
         if (b != null) {
-            String Name = b.getString("Name");
-            String Description = b.getString("Description");
-            String ImageLink = b.getString("ImageLink");
-            String CreateDate = b.getString("CreateDate");
-            String ContactName = b.getString("ContactName");
-            ContactEmail = b.getString("ContactEmail");
-            ContactNo = b.getString("ContactNo");
+            try {
+                String Name = b.getString("Name");
+                String Description = b.getString("Description");
+                String ImageLink = b.getString("ImageLink");
+                String CreateDate = b.getString("CreateDate");
+                String ServiceLocation1 = b.getString("ServiceLocation");
+                String ContactName = b.getString("ContactName");
+                ContactEmail = b.getString("ContactEmail");
+                ContactNo = b.getString("ContactNo");
+                Date dateObj = curFormater.parse(CreateDate);
+                String newDateStr = curFormater.format(dateObj);
+                serviceTitle.setText(Name + "\nby: " + ContactName + ", " + newDateStr);
+                ServiceLocation.setText(ServiceLocation1);
+                ServiceLocation.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_location, 0, 0,0);
+                ServiceDescription.setText(Description);
+                new DownloadImageFromInternet((ImageView) findViewById(R.id.image_view))
+                        .execute(ImageLink);
 
-            serviceTitle.setText(Name + "\nby: " + ContactName);
-            ServiceDescription.setText(Description);
-            new DownloadImageFromInternet((ImageView) findViewById(R.id.image_view))
-                    .execute(ImageLink);
+            }catch (Exception e){
 
-
+            }
         }
         Button contactUs = findViewById(R.id.ServiceUploadBtn);
 

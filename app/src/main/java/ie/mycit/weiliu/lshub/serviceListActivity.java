@@ -173,6 +173,7 @@ public class serviceListActivity extends AppCompatActivity {
                     b.putString("Description", all.getString("Description"));
                     b.putString("ImageLink", all.getString("ImageLink"));
                     b.putString("CreateDate", all.getString("CreateDate"));
+                    b.putString("ServiceLocation", all.getString("ServiceLocation"));
                     b.putString("ContactName", ContactName);
                     b.putString("ContactEmail", ContactEmail);
                     b.putString("ContactNo", ContactNo);
