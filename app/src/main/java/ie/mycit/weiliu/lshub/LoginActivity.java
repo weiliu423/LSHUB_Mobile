@@ -2,6 +2,8 @@ package ie.mycit.weiliu.lshub;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,6 +27,9 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -86,19 +91,29 @@ public class LoginActivity extends AppCompatActivity {
         AccountHeaderHelper accountHeaderHelper = new AccountHeaderHelper();
         final EditText username = findViewById(R.id.username);
         final EditText password = findViewById(R.id.password);
-
         IProfile profile = new ProfileDrawerItem();
-        if (utils.getEmail(this) != null ){
-            profile = new ProfileDrawerItem().withName("Hi "+utils.getEmail(this)).withIcon(getResources().getDrawable(R.drawable.profile3));
-            signupView = new PrimaryDrawerItem().withName("Logout").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(100).withSelectable(false);
+        if(utils.getBarColour(this) != null) {
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(utils.getBarColour(this))));
         }else{
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#0091EA")));
+        }
+        if(utils.getTextColour(this) == null) {
+            utils.saveTextColour("#000000",this);
+        }
+        if(utils.getColour(this)==null){
+            utils.saveColour("#ffffff",this);
+        }
+        if (utils.getEmail(this) != null) {
+            profile = new ProfileDrawerItem().withName("Hi " + utils.getEmail(this)).withIcon(getResources().getDrawable(R.drawable.profile3)).withTextColor(Color.parseColor(utils.getTextColour(this)));
+            signupView = new PrimaryDrawerItem().withName("Logout").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIconColor(Color.parseColor(utils.getTextColour(this))).withIdentifier(100).withSelectable(false).withTextColor(Color.parseColor(utils.getTextColour(this)));
+        } else {
             profile = new ProfileDrawerItem().withName("Welcome").withEmail("Guest").withIcon(GoogleMaterial.Icon.gmd_account_circle);
-            signupView = new PrimaryDrawerItem().withName("Sign up").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(2).withSelectable(false);
+            signupView = new PrimaryDrawerItem().withName("Sign up").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(2).withSelectable(false).withIconColor(Color.parseColor(utils.getTextColour(this))).withTextColor(Color.parseColor(utils.getTextColour(this)));
         }
 
         headerResult = accountHeaderHelper.header(this,savedInstanceState);
         headerResult.addProfiles(profile);
-        result = drawer.getDrawer(this, savedInstanceState, toolbar, profile, headerResult,null, signupView);
+        result = drawer.getDrawer(this, savedInstanceState, toolbar, profile, headerResult,null, signupView, null);
 
         //Create the drawer
 
@@ -107,7 +122,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 result.getActionBarDrawerToggle().getToolbarNavigationClickListener().onClick(view);
-                Toast.makeText(getApplicationContext(),"clicked",Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(),"clicked",Toast.LENGTH_SHORT).show();
                 hideKeyboard(view);
             }
         });
@@ -133,7 +148,7 @@ public class LoginActivity extends AppCompatActivity {
 
                             String results = POSTRequest(UserName, Password);
                             System.out.println("------------"+ result + "-------------");
-                            if( results == null || results.contains("false"))
+                            if( results == null)
                             {
                                 runOnUiThread(new Runnable() {
 
@@ -152,15 +167,16 @@ public class LoginActivity extends AppCompatActivity {
                                     @Override
                                     public void run() {
 
-                                        Toast.makeText(LoginActivity.this.getApplicationContext(), "Account Login Successfully", Toast.LENGTH_LONG).show();
+                                        //Toast.makeText(LoginActivity.this.getApplicationContext(), "Account Login Successfully", Toast.LENGTH_LONG).show();
                                         hideLoadingAnimation();
                                         // Create the AccountHeaderHelper
                                         headerResult.addProfiles(new ProfileDrawerItem().withName("Hi "+UserName).withIcon(getResources().getDrawable(R.drawable.profile3)));
                                         PreferenceUtils.saveEmail(username.getText().toString(), LoginActivity.this);
                                         PreferenceUtils.savePassword(password.getText().toString(), LoginActivity.this);
+                                        PreferenceUtils.saveIsProvider(results.split(":")[1], LoginActivity.this);
                                         username.getText().clear();
                                         password.getText().clear();
-                                        signupView.withName("Logout").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(100).withSelectable(false);
+                                        signupView.withName("Logout").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(100).withSelectable(false).withTextColor(Color.parseColor(utils.getTextColour(LoginActivity.this)));
                                         result.updateItem(signupView);
                                         Intent logged = new Intent(LoginActivity.this.getApplicationContext(), MainActivity.class);
                                         startActivity(logged);
@@ -214,7 +230,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
     public String POSTRequest(String UserName, String Password) throws IOException {
-
+        String Data = new String();
         final String POST_PARAMS = "{\n" +
                 "    \"UserName\": \""+UserName+"\",\r\n" +
                 "    \"Password\": \""+Password+"\"" + "\n}";
@@ -242,8 +258,14 @@ public class LoginActivity extends AppCompatActivity {
                 response.append(inputLine);
             } in .close();
             // print result
-            System.out.println(response.toString());
-            return response.toString();
+            try {
+                JSONObject mainObject = new JSONObject(response.toString());
+                Data = mainObject.getString("Data");
+
+            } catch (JSONException e) {
+
+            }
+            return Data;
 
         } else {
             System.out.println("POST NOT WORKED");

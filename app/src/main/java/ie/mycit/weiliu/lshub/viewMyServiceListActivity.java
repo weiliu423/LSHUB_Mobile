@@ -9,8 +9,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -44,11 +47,9 @@ import ie.mycit.weiliu.lshub.utils.AccountHeaderHelper;
 import ie.mycit.weiliu.lshub.utils.DrawerHelper;
 import ie.mycit.weiliu.lshub.utils.PreferenceUtils;
 
-public class ListOfCategoryActivity extends AppCompatActivity {
+public class viewMyServiceListActivity extends AppCompatActivity {
 
-    private static final int PROFILE_SETTING = 100000;
 
-    //save our header or result
     private AccountHeader headerResult = null;
     private Drawer result = null;
     private VideoView videoview;
@@ -56,77 +57,162 @@ public class ListOfCategoryActivity extends AppCompatActivity {
     SpotsDialog progress;
     JSONArray Data;
     ArrayList<String> list;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list_of_category);
-
+        setContentView(R.layout.activity_view_my_service_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar4);
         setSupportActionBar(toolbar);
-
-        ListView serviceLists = findViewById(R.id.serviceLists1);
-
-        showLoadingAnimation("Loading services, Please Wait, Thank you");
-        Thread thread = new Thread(new Runnable(){
-            public void run() {
-                list = new ArrayList<String>();
-                try {
-                    Data = GetRequest();
-                    for (int i = 0; i < Data.length(); i++) {
-                        String data = Data.getString(i);
-                        list.add(data);
-                    }
-
-                    if(!list.isEmpty()) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ArrayAdapter adapter = new ArrayAdapter<String>(ListOfCategoryActivity.this, R.layout.listtextsize, list);
-                                serviceLists.setAdapter(adapter);
-                                hideLoadingAnimation();
-                            }
-                        });
-                    }else{
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(getApplicationContext(),
-                                        "Error loading data!", Toast.LENGTH_LONG)
-                                        .show();
-                                hideLoadingAnimation();
-                            }
-                        });
-                    }
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        });
-        thread.start();
-
-        serviceLists.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    String name = serviceLists.getAdapter().getItem(position).toString();
-                    Bundle b = new Bundle();
-                    b.putString("Name", name);
-                    Intent loadService = new Intent(ListOfCategoryActivity.this.getApplicationContext(), serviceListActivity.class);
-                    loadService.putExtras(b);
-                    startActivity(loadService);
-
-
-
-            }
-        });
-
         DrawerHelper drawer = new DrawerHelper();
         AccountHeaderHelper accountHeaderHelper = new AccountHeaderHelper();
         PrimaryDrawerItem login = null;
         PrimaryDrawerItem signupView = null;
-        PrimaryDrawerItem addServiceView = null;
         PreferenceUtils utils = new PreferenceUtils();
         IProfile profile = new ProfileDrawerItem();
+
+        LinearLayout providerCheckForView = findViewById(R.id.providerCheckForView);
+        LinearLayout loginCheckForView = findViewById(R.id.loginCheck1);
+        Button redirectLogin = findViewById(R.id.redirectLogin11);
+        providerCheckForView.setVisibility(View.INVISIBLE);
+        loginCheckForView.setVisibility(View.INVISIBLE);
+        ListView serviceLists = findViewById(R.id.serviceMyLists);
+        Button uploadServiceBtn = findViewById(R.id.uploadMyServiceBtn);
+        String Name = utils.getEmail(this);
+        TextView check = findViewById(R.id.checkMyService);
+        TextView listOfService = findViewById(R.id.textView7);
+        check.setVisibility(View.INVISIBLE);
+        uploadServiceBtn.setVisibility(View.INVISIBLE);
+        if (utils.getEmail(this) != null) {
+            if (utils.getIsProvider(this).equals("1")) {
+                showLoadingAnimation("Loading services, Please Wait, Thank you");
+                Thread thread = new Thread(new Runnable() {
+                    public void run() {
+                        list = new ArrayList<String>();
+                        try {
+                            Data = GetRequest(Name);
+                            if (Data == null || Data.length() == 0) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        check.setText("No services submitted, be the first one !");
+                                        check.setVisibility(View.VISIBLE);
+                                        listOfService.setVisibility(View.INVISIBLE);
+                                        uploadServiceBtn.setVisibility(View.VISIBLE);
+                                        hideLoadingAnimation();
+                                    }
+                                });
+
+                            } else {
+                                for (int i = 0; i < Data.length(); i++) {
+                                    JSONObject data = Data.getJSONObject(i);
+                                    JSONArray serviceInfo = data.getJSONArray("serviceInfo");
+                                    for (int j = 0; j < serviceInfo.length(); j++) {
+                                        JSONObject actor = serviceInfo.getJSONObject(j);
+                                        String name = actor.getString("Name");
+                                        list.add(name);
+                                    }
+                                }
+
+                                if (!list.isEmpty()) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            check.setVisibility(View.INVISIBLE);
+                                            listOfService.setVisibility(View.VISIBLE);
+                                            ArrayAdapter adapter = new ArrayAdapter<String>(viewMyServiceListActivity.this, R.layout.listtextsize, list);
+                                            serviceLists.setAdapter(adapter);
+                                            hideLoadingAnimation();
+                                        }
+                                    });
+                                } else {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getApplicationContext(),
+                                                    "Error loading data!", Toast.LENGTH_LONG)
+                                                    .show();
+                                            hideLoadingAnimation();
+                                        }
+                                    });
+                                }
+
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+                thread.start();
+            } else {
+                listOfService.setVisibility(View.INVISIBLE);
+                providerCheckForView.setVisibility(View.VISIBLE);
+            }
+        }else {
+            listOfService.setVisibility(View.INVISIBLE);
+            loginCheckForView.setVisibility(View.VISIBLE);
+        }
+        redirectLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(viewMyServiceListActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
+        uploadServiceBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent uploadService = new Intent(viewMyServiceListActivity.this.getApplicationContext(), uploadServiceActivity.class);
+                startActivity(uploadService);
+            }
+        });
+        serviceLists.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                JSONObject all = new JSONObject();
+                JSONArray serviceInfo = new JSONArray();
+                String ContactName = "";
+                String ContactEmail = "";
+                String ContactNo = "";
+                try {
+                    for (int i = 0; i < Data.length(); i++) {
+                        JSONObject data = Data.getJSONObject(i);
+                        serviceInfo = data.getJSONArray("serviceInfo");
+                        ContactName = data.getString("ContactName");
+                        ContactEmail = data.getString("ContactEmail");
+                        ContactNo = data.getString("ContactNo");
+                        for (int j = 0; j < serviceInfo.length(); j++) {
+                            all = serviceInfo.getJSONObject(j);
+                            String name = all.getString("Name");
+                            if (name.equals(list.get(position))) {
+                                i = Data.length();
+                                j=serviceInfo.length();
+                            }
+                        }
+                    }
+
+                    Bundle b = new Bundle();
+                    b.putString("ServiceID", all.getString("ServiceID"));
+                    b.putString("Name", all.getString("Name"));
+                    b.putString("Description", all.getString("Description"));
+                    b.putString("ImageLink", all.getString("ImageLink"));
+                    b.putString("CreateDate", all.getString("CreateDate"));
+                    b.putString("ServiceLocation", all.getString("ServiceLocation"));
+                    b.putString("ContactName", ContactName);
+                    b.putString("ContactEmail", ContactEmail);
+                    b.putString("ContactNo", ContactNo);
+                    Intent loadService = new Intent(viewMyServiceListActivity.this.getApplicationContext(), updateMyServiceActivity.class);
+                    loadService.putExtras(b);
+                    startActivity(loadService);
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        });
+        PrimaryDrawerItem addServiceView = null;
         if(utils.getBarColour(this) != null) {
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(utils.getBarColour(this))));
         }else{
@@ -155,10 +241,11 @@ public class ListOfCategoryActivity extends AppCompatActivity {
         result = drawer.getDrawer(this, savedInstanceState, toolbar, profile, headerResult, login, signupView, addServiceView);
     }
 
-    public JSONArray GetRequest() throws IOException {
+    public JSONArray GetRequest(String account) throws IOException {
         //ArrayList<String> list = new ArrayList<String>();
         JSONArray Data = new JSONArray();
-        URL obj = new URL("https://serviceinfo.azurewebsites.net/getAllCategories");
+        System.out.println("TTTTTTTTTTTTTTTTTT :: " + account);
+        URL obj = new URL("https://serviceinfo.azurewebsites.net/getServicesByAccount/"+ account);
         HttpURLConnection httpConnection = (HttpURLConnection) obj.openConnection();
         httpConnection.setRequestMethod("GET");
         httpConnection.setUseCaches(false);
@@ -184,14 +271,14 @@ public class ListOfCategoryActivity extends AppCompatActivity {
             } catch (JSONException e) {
 
             }
-
             //list.add("test1");
             return Data;
 
         } else {
-            return Data;
+            return null;
         }
     }
+
     void showLoadingAnimation(String loadingMessage){
         //ProgressDialog.show(this, "Loading", "Wait while loading...");
         progress = new SpotsDialog(this,  R.style.Custom);
@@ -207,6 +294,7 @@ public class ListOfCategoryActivity extends AppCompatActivity {
         progress.dismiss();
 
     }
+
     private OnCheckedChangeListener onCheckedChangeListener = new OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
@@ -234,24 +322,6 @@ public class ListOfCategoryActivity extends AppCompatActivity {
             result.closeDrawer();
         } else {
             super.onBackPressed();
-        }
-    }@Override
-    protected void onResume() {
-        super.onResume();
-        if(videoview!=null){
-            videoview = (VideoView) findViewById(R.id.videoView);
-            uri = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.star1);
-            //videoview.setVideoPath();
-            videoview.setVideoURI(uri);
-            videoview.start();
-        }
-
-    }
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (videoview != null && videoview.isPlaying()) {
-            videoview.pause();
         }
     }
 

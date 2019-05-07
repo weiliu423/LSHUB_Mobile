@@ -1,7 +1,8 @@
 package ie.mycit.weiliu.lshub;
 
-import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,6 +28,7 @@ import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.mikepenz.materialdrawer.model.interfaces.Nameable;
+import com.mikepenz.octicons_typeface_library.Octicons;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,8 +40,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import dmax.dialog.SpotsDialog;
 import ie.mycit.weiliu.lshub.utils.AccountHeaderHelper;
@@ -75,13 +75,13 @@ public class serviceListActivity extends AppCompatActivity {
         Bundle b = in.getExtras();
         String Name = b.getString("Name");
         TextView check = findViewById(R.id.checkService);
+        TextView listOfService = findViewById(R.id.textView6);
         check.setVisibility(View.INVISIBLE);
         uploadServiceBtn.setVisibility(View.INVISIBLE);
 
         Thread thread = new Thread(new Runnable(){
             public void run() {
                         list = new ArrayList<String>();
-                        list.add("Select an item");
                         try {
                             Data = GetRequest(Name);
                             if(Data == null || Data.length() == 0){
@@ -90,6 +90,7 @@ public class serviceListActivity extends AppCompatActivity {
                                     public void run() {
                                         check.setText("No services submitted, be the first one !");
                                         check.setVisibility(View.VISIBLE);
+                                        listOfService.setVisibility(View.INVISIBLE);
                                         uploadServiceBtn.setVisibility(View.VISIBLE);
                                         hideLoadingAnimation();
                                     }
@@ -111,6 +112,7 @@ public class serviceListActivity extends AppCompatActivity {
                                         @Override
                                         public void run() {
                                             check.setVisibility(View.INVISIBLE);
+                                            listOfService.setVisibility(View.VISIBLE);
                                             ArrayAdapter adapter = new ArrayAdapter<String>(serviceListActivity.this, R.layout.listtextsize, list);
                                             serviceLists.setAdapter(adapter);
                                             hideLoadingAnimation();
@@ -193,20 +195,35 @@ public class serviceListActivity extends AppCompatActivity {
         AccountHeaderHelper accountHeaderHelper = new AccountHeaderHelper();
         PrimaryDrawerItem login = null;
         PrimaryDrawerItem signupView = null;
+        PrimaryDrawerItem addServiceView = null;
         PreferenceUtils utils = new PreferenceUtils();
         IProfile profile = new ProfileDrawerItem();
-        if (utils.getEmail(this) != null ){
-            profile = new ProfileDrawerItem().withName("Hi "+utils.getEmail(this)).withIcon(getResources().getDrawable(R.drawable.profile3));
-            signupView = new PrimaryDrawerItem().withName("Logout").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(100).withSelectable(false);
+        if(utils.getBarColour(this) != null) {
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(utils.getBarColour(this))));
         }else{
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#0091EA")));
+        }
+        if(utils.getTextColour(this) == null) {
+            utils.saveTextColour("#000000",this);
+        }
+        if(utils.getColour(this)==null){
+            utils.saveColour("#ffffff",this);
+        }
+        if (utils.getEmail(this) != null) {
+            profile = new ProfileDrawerItem().withName("Hi " + utils.getEmail(this)).withIcon(getResources().getDrawable(R.drawable.profile3)).withTextColor(Color.parseColor(utils.getTextColour(this)));
+            signupView = new PrimaryDrawerItem().withName("Logout").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIconColor(Color.parseColor(utils.getTextColour(this))).withIdentifier(100).withSelectable(false).withTextColor(Color.parseColor(utils.getTextColour(this)));
+            if(utils.getIsProvider(this).equals("1")){
+                addServiceView =  new PrimaryDrawerItem().withName("Add New Service").withIcon(Octicons.Icon.oct_diff_added).withIconColor(Color.parseColor(utils.getTextColour(this))).withIdentifier(11).withSelectable(false).withTextColor(Color.parseColor(utils.getTextColour(this)));
+            }
+        } else {
             profile = new ProfileDrawerItem().withName("Welcome").withEmail("Guest").withIcon(GoogleMaterial.Icon.gmd_account_circle);
-            login = new PrimaryDrawerItem().withName("Login").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(1).withSelectable(false);
-            signupView = new PrimaryDrawerItem().withName("Sign up").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(2).withSelectable(false);
+            login = new PrimaryDrawerItem().withName("Login").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(1).withSelectable(false).withIconColor(Color.parseColor(utils.getTextColour(this))).withTextColor(Color.parseColor(utils.getTextColour(this)));
+            signupView = new PrimaryDrawerItem().withName("Sign up").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(2).withSelectable(false).withIconColor(Color.parseColor(utils.getTextColour(this))).withTextColor(Color.parseColor(utils.getTextColour(this)));
         }
 
         headerResult = accountHeaderHelper.header(this,savedInstanceState);
         headerResult.addProfiles(profile);
-        result = drawer.getDrawer(this, savedInstanceState, toolbar, profile, headerResult, login, signupView);
+        result = drawer.getDrawer(this, savedInstanceState, toolbar, profile, headerResult, login, signupView, addServiceView);
     }
 
     public JSONArray GetRequest(String category) throws IOException {
@@ -308,30 +325,5 @@ public class serviceListActivity extends AppCompatActivity {
             videoview.pause();
         }
     }
-    private class StableArrayAdapter extends ArrayAdapter<String> {
-
-        HashMap<String, Integer> mIdMap = new HashMap<String, Integer>();
-
-        public StableArrayAdapter(Context context, int textViewResourceId,
-                                  List<String> objects) {
-            super(context, textViewResourceId, objects);
-            for (int i = 0; i < objects.size(); ++i) {
-                mIdMap.put(objects.get(i), i);
-            }
-        }
-
-        @Override
-        public long getItemId(int position) {
-            String item = getItem(position);
-            return mIdMap.get(item);
-        }
-
-        @Override
-        public boolean hasStableIds() {
-            return true;
-        }
-
-    }
-
 
 }

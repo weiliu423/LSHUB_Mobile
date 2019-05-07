@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".serviceListActivity">
-
+    tools:context=".viewMyServiceListActivity">
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar4"
         android:layout_width="match_parent"
@@ -19,7 +18,7 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <ScrollView
-        android:id="@+id/scrollView3"
+        android:id="@+id/scrollView4"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
@@ -29,20 +28,20 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <LinearLayout
-            android:id="@+id/linearLayout2"
+            android:id="@+id/linearLayout3"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView6"
+                android:id="@+id/textView7"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:lineSpacingExtra="4sp"
                 android:layout_marginTop="60sp"
                 android:layout_marginBottom="5sp"
-                android:text="List of Services: "
+                android:text="List of your Services: "
                 android:textAlignment="viewStart"
                 android:textAllCaps="true"
                 android:textColor="@color/md_light_blue_400"
@@ -58,7 +57,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
                 <ListView
-                    android:id="@+id/serviceLists"
+                    android:id="@+id/serviceMyLists"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:divider="#FFCC00"
@@ -69,13 +68,14 @@
         </LinearLayout>
     </ScrollView>
     <LinearLayout
+        android:id="@+id/loginCheckForView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
         android:layout_gravity="center_vertical|center_horizontal"
         android:orientation="vertical">
         <TextView
-            android:id="@+id/checkService"
+            android:id="@+id/checkMyService"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -86,7 +86,7 @@
             android:textAlignment="center" />
 
         <Button
-            android:id="@+id/uploadServiceBtn"
+            android:id="@+id/uploadMyServiceBtn"
             style="?android:textAppearanceSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -95,8 +95,57 @@
             android:ems="10"
             android:background="@drawable/mybutton"
             android:padding="2sp"
-            android:text="upload new service"
+            android:text="upload a service"
             android:textSize="25sp" />
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/loginCheck1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/checkService11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10sp"
+            android:textColor="@color/md_white_1000"
+            android:textSize="20sp"
+            android:hint="Please login first to see your services."
+            android:textAlignment="center" />
 
+        <Button
+            android:id="@+id/redirectLogin11"
+            style="?android:textAppearanceSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10sp"
+            android:ems="10"
+            android:background="@drawable/mybutton"
+            android:padding="2sp"
+            android:text="Login"
+            android:textSize="25sp" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/providerCheckForView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/checkProviderService"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10sp"
+            android:textColor="@color/md_black_1000"
+            android:textSize="20sp"
+            android:hint="Not a Provider account!"
+            android:textAlignment="center" />
+
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

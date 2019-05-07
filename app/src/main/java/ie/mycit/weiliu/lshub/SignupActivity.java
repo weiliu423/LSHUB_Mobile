@@ -2,15 +2,22 @@ package ie.mycit.weiliu.lshub;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -33,6 +40,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import dmax.dialog.SpotsDialog;
 import ie.mycit.weiliu.lshub.utils.AccountHeaderHelper;
@@ -50,6 +59,9 @@ public class SignupActivity extends AppCompatActivity {
     private Uri uri;
     SpotsDialog progress;
     PrimaryDrawerItem signupView = null;
+    String SpinnerText;
+    List<String> accountType;
+    int isProvider = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,18 +97,28 @@ public class SignupActivity extends AppCompatActivity {
         PrimaryDrawerItem login = null;
         PreferenceUtils utils = new PreferenceUtils();
         IProfile profile = new ProfileDrawerItem();
-        if (utils.getEmail(this) != null ){
-            profile = new ProfileDrawerItem().withName("Hi "+utils.getEmail(this)).withIcon(getResources().getDrawable(R.drawable.profile3));
-            signupView = new PrimaryDrawerItem().withName("Logout").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(100).withSelectable(false);
+        if(utils.getBarColour(this) != null) {
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(utils.getBarColour(this))));
         }else{
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#0091EA")));
+        }
+        if(utils.getTextColour(this) == null) {
+            utils.saveTextColour("#000000",this);
+        }
+        if(utils.getColour(this)==null){
+            utils.saveColour("#ffffff",this);
+        }
+        if (utils.getEmail(this) != null) {
+            profile = new ProfileDrawerItem().withName("Hi " + utils.getEmail(this)).withIcon(getResources().getDrawable(R.drawable.profile3)).withTextColor(Color.parseColor(utils.getTextColour(this)));
+            signupView = new PrimaryDrawerItem().withName("Logout").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIconColor(Color.parseColor(utils.getTextColour(this))).withIdentifier(100).withSelectable(false).withTextColor(Color.parseColor(utils.getTextColour(this)));
+        } else {
             profile = new ProfileDrawerItem().withName("Welcome").withEmail("Guest").withIcon(GoogleMaterial.Icon.gmd_account_circle);
-            login = new PrimaryDrawerItem().withName("Login").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(1).withSelectable(false);
-            signupView = new PrimaryDrawerItem().withName("Sign up").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(2).withSelectable(false);
+            login = new PrimaryDrawerItem().withName("Login").withIcon(GoogleMaterial.Icon.gmd_account_circle).withIdentifier(1).withSelectable(false).withIconColor(Color.parseColor(utils.getTextColour(this))).withTextColor(Color.parseColor(utils.getTextColour(this)));
         }
 
         headerResult = accountHeaderHelper.header(this,savedInstanceState);
         headerResult.addProfiles(profile);
-        result = drawer.getDrawer(this, savedInstanceState, toolbar, profile, headerResult, login, signupView);
+        result = drawer.getDrawer(this, savedInstanceState, toolbar, profile, headerResult, login, signupView, null);
 
         result.getActionBarDrawerToggle().setToolbarNavigationClickListener(new View.OnClickListener() {
             @Override
@@ -110,8 +132,66 @@ public class SignupActivity extends AppCompatActivity {
         final EditText firstName = (EditText)findViewById(R.id.firstName);
         final EditText lastName = (EditText)findViewById(R.id.surName);
         final EditText email = (EditText)findViewById(R.id.emailSignUp);
+        final EditText phoneNo = (EditText)findViewById(R.id.phoneNo);
         final EditText password = (EditText)findViewById(R.id.passwordSignUp);
         final EditText username = findViewById(R.id.usernameSignUp);
+        final Spinner spinner = findViewById(R.id.spinnerAccount);
+
+
+        accountType = new ArrayList<String>();
+        accountType.add("Choose an account type:");
+        accountType.add("User");
+        accountType.add("Provider");
+        final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
+                this, android.R.layout.simple_spinner_dropdown_item ,accountType){
+            @Override
+            public boolean isEnabled(int position){
+                if(position == 0)
+                {
+                    // Disable the first item from Spinner
+                    // First item will be use for hint
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            @Override
+            public View getDropDownView(int position, View convertView,
+                                        ViewGroup parent) {
+                View view = super.getDropDownView(position, convertView, parent);
+                TextView tv = (TextView) view;
+                if(position == 0){
+                    // Set the hint text color gray
+                    tv.setTextColor(Color.GRAY);
+                }
+                else {
+                    tv.setTextColor(Color.BLACK);
+                }
+                return view;
+            }
+        };
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(spinnerArrayAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedItemText = (String) parent.getItemAtPosition(position);
+                // If user change the default selection
+                // First item is disable and it is used for hint
+                if(position > 0){
+                    // Notify the selected item text
+                    SpinnerText = selectedItemText;
+                    isProvider = position - 1;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         signupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -133,8 +213,9 @@ public class SignupActivity extends AppCompatActivity {
                             String FirstName = firstName.getText().toString();
                             String LastName = lastName.getText().toString();
                             String Email = email.getText().toString();
+                            String PhoneNo = phoneNo.getText().toString();
 
-                            String result1 = POSTRequest(UserName, Password, FirstName, LastName, Email);
+                            String result1 = POSTRequest(UserName, Password, FirstName, LastName, Email,PhoneNo, isProvider );
                             System.out.println("------------"+ result + "-------------");
                             if( result1 == null)
                             {
@@ -168,6 +249,7 @@ public class SignupActivity extends AppCompatActivity {
                                         firstName.getText().clear();
                                         lastName.getText().clear();
                                         email.getText().clear();
+                                        phoneNo.getText().clear();
                                         Intent logged = new Intent(SignupActivity.this.getApplicationContext(), MainActivity.class);
                                         startActivity(logged);
                                         finish();
@@ -212,13 +294,15 @@ public class SignupActivity extends AppCompatActivity {
         progress.dismiss();
 
     }
-    public String POSTRequest(String UserName, String Password,String FirstName,String LastName,String Email) throws IOException {
+    public String POSTRequest(String UserName, String Password,String FirstName,String LastName,String Email, String PhoneNo, int isProvider) throws IOException {
 
         final String POST_PARAMS = "{\n" +
                 "    \"UserName\": \""+UserName+"\",\r\n" +
                 "    \"Password\": "+ Password +",\r\n" +
                 "    \"FirstName\": \""+FirstName+"\",\r\n" +
                 "    \"LastName\": \""+LastName+"\",\r\n" +
+                "    \"PhoneNo\": \""+PhoneNo+"\",\r\n" +
+                "    \"isProvider\": \""+isProvider+"\",\r\n" +
                 "    \"Email\": \""+Email+"\"" + "\n}";
         System.out.println(POST_PARAMS);
         URL obj = new URL("https://lshapi.azurewebsites.net/createNewAccount");

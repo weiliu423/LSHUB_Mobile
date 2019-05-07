@@ -20,7 +20,7 @@ public class AccountHeaderHelper {
 
         headerResult = new AccountHeaderBuilder()
                 .withActivity(context)
-                .withTranslucentStatusBar(true).withHeaderBackground(R.drawable.header)
+                .withTranslucentStatusBar(true).withHeaderBackground(R.drawable.header2)
                 .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
                     @Override
                     public boolean onProfileChanged(View view, IProfile profile, boolean current) {

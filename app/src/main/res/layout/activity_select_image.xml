@@ -10,7 +10,23 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".uploadServiceActivity">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
+        <!--BUTTON TO CAPTURE IMAGE FROM CAMERA-->
+        <Button
+            android:id="@+id/bTakePhoto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:text="TAKE PHOTO"
+            android:textColor="#FFFFFF"
+            android:background="@color/colorPrimaryDark"
+            />
+
+    </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
