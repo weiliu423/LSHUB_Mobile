@@ -88,11 +88,27 @@ public class serviceListActivity extends AppCompatActivity {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        check.setText("No services submitted, be the first one !");
-                                        check.setVisibility(View.VISIBLE);
-                                        listOfService.setVisibility(View.INVISIBLE);
-                                        uploadServiceBtn.setVisibility(View.VISIBLE);
-                                        hideLoadingAnimation();
+                                        if(PreferenceUtils.getEmail(serviceListActivity.this) != null ) {
+                                            if (PreferenceUtils.getIsProvider(serviceListActivity.this).equals("1")) {
+                                                check.setText("No services submitted, be the first one !");
+                                                check.setVisibility(View.VISIBLE);
+                                                listOfService.setVisibility(View.INVISIBLE);
+                                                uploadServiceBtn.setVisibility(View.VISIBLE);
+                                                hideLoadingAnimation();
+                                            } else {
+                                                check.setText("No services available at this time, please come back later");
+                                                check.setVisibility(View.VISIBLE);
+                                                listOfService.setVisibility(View.INVISIBLE);
+                                                uploadServiceBtn.setVisibility(View.INVISIBLE);
+                                                hideLoadingAnimation();
+                                            }
+                                        }else {
+                                            check.setText("No services available at this time, please come back later");
+                                            check.setVisibility(View.VISIBLE);
+                                            listOfService.setVisibility(View.INVISIBLE);
+                                            uploadServiceBtn.setVisibility(View.INVISIBLE);
+                                            hideLoadingAnimation();
+                                        }
                                     }
                                 });
 
