@@ -97,7 +97,6 @@ public class updateMyServiceActivity extends AppCompatActivity {
     String city = "";
     String country = "";
     Bundle b;
-    Uri path;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -351,6 +350,7 @@ public class updateMyServiceActivity extends AppCompatActivity {
         result = drawer.getDrawer(this, savedInstanceState, toolbar, profile, headerResult, login, signupView, addServiceView);
 
         Button ServiceUpdateBtn = findViewById(R.id.ServiceUpdateBtn);
+        Button ServiceDeleteBtn = findViewById(R.id.ServiceDeleteBtn);
 
         ServiceUpdateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -410,7 +410,64 @@ public class updateMyServiceActivity extends AppCompatActivity {
                 thread1.start();
             }
         });
+        ServiceDeleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showLoadingAnimation("Loading Please wait!");
+                ServiceTitleEdit = ServiceTitle.getText().toString();
+                ServiceDescriptionEdit = ServiceDescription.getText().toString();
+                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                        .permitAll().build();
+                StrictMode.setThreadPolicy(policy);
+                Thread thread1 = new Thread(new Runnable(){
+                    public void run() {
+                        try {
+                            if(spinner.getSelectedItem() !=null) {
 
+                                String response = POSTRequestDelete(b.getString("ServiceID"));
+
+                                if (response != null) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getApplicationContext(),
+                                                    "Service successfully updated!", Toast.LENGTH_LONG)
+                                                    .show();
+                                            finish();
+                                            hideLoadingAnimation();
+                                        }
+                                    });
+                                } else {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getApplicationContext(),
+                                                    "Failed to update, please check input!", Toast.LENGTH_LONG)
+                                                    .show();
+                                            hideLoadingAnimation();
+                                        }
+                                    });
+                                }
+                            }else{
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getApplicationContext(),
+                                                "Failed to update, please check input!", Toast.LENGTH_LONG)
+                                                .show();
+                                        hideLoadingAnimation();
+                                    }
+                                });
+                            }
+                        }catch (Exception e){
+                            System.out.println(e);
+                        }
+                    }
+                });
+
+                thread1.start();
+            }
+        });
 
     }
     public JSONArray GetRequest() throws IOException {
@@ -583,6 +640,55 @@ public class updateMyServiceActivity extends AppCompatActivity {
             })
                     .dispatch();
         }
+
+        return validate;
+    }
+    public String POSTRequestDelete(String serviceId) throws IOException {
+
+        PreferenceUtils utils = new PreferenceUtils();
+            try{
+                final String POST_PARAMS = "{\n" +
+                        "    \"ServiceID\": \"" + serviceId + "\",\r\n" +
+                        "    \"ServiceLocation\": \"" + city + ", " + country + "\"" + "\n}";
+
+                System.out.println("TTTTTTTTTTTTT: " + POST_PARAMS);
+                URL obj = new URL("https://serviceinfo.azurewebsites.net/deleteService");
+                HttpURLConnection postConnection = (HttpURLConnection) obj.openConnection();
+                postConnection.setRequestMethod("DELETE");
+                //Header--------------------------------------------------------
+                //postConnection.setRequestProperty("userId", "a1bcdefgh");
+                postConnection.setRequestProperty("Content-Type", "application/json");
+                postConnection.setDoOutput(true);
+                OutputStream os = postConnection.getOutputStream();
+                os.write(POST_PARAMS.getBytes());
+                os.flush();
+                os.close();
+                int responseCode = postConnection.getResponseCode();
+                System.out.println("POST Response Code :  " + responseCode);
+                System.out.println("POST Response Message : " + postConnection.getResponseMessage());
+                if (responseCode == HttpURLConnection.HTTP_CREATED) { //success
+                    BufferedReader in = new BufferedReader(new InputStreamReader(
+                            postConnection.getInputStream()));
+                    String inputLine;
+                    StringBuffer response = new StringBuffer();
+                    while ((inputLine = in.readLine()) != null) {
+                        response.append(inputLine);
+                    }
+                    in.close();
+                    // print result
+                    System.out.println(response.toString());
+                    validate = "true";
+
+                } else {
+                    System.out.println("POST NOT WORKED");
+                    validate = null;
+                }
+
+            } catch (Exception o){
+                o.printStackTrace();
+
+            }
+
 
         return validate;
     }

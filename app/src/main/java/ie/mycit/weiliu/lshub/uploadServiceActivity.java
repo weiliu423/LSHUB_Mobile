@@ -56,7 +56,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -89,7 +88,7 @@ public class uploadServiceActivity extends AppCompatActivity {
     String imgUrl;
     String ServiceTitleEdit;
     String ServiceDescriptionEdit;
-    String SpinnerText;
+    String SpinnerText = "";
     List<String> categories;
     String validate = "";
     String city = "";
@@ -164,7 +163,7 @@ public class uploadServiceActivity extends AppCompatActivity {
 
         final Spinner spinner = findViewById(R.id.spinner);
         categories = new ArrayList<String>();
-        categories.add("Select an item...");
+        categories.add("Select a category:");
         final Thread thread = new Thread(new Runnable(){
             JSONArray Data;
             public void run() {
@@ -328,48 +327,67 @@ public class uploadServiceActivity extends AppCompatActivity {
         ServiceUploadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showLoadingAnimation("Loading Please wait!");
-                ServiceTitleEdit = ServiceTitle.getText().toString();
-                ServiceDescriptionEdit = ServiceDescription.getText().toString();
-                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-                        .permitAll().build();
-                StrictMode.setThreadPolicy(policy);
-                Thread thread1 = new Thread(new Runnable(){
-                    public void run() {
-                        try {
-                            String response = POSTRequest();
-
-                            if(response != null) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
+                if(imageUri != null && !imageUri.equals(Uri.EMPTY)) {
+                    if(!ServiceTitle.getText().toString().matches("")) {
+                        if(!SpinnerText.matches("")) {
+                            if(!ServiceDescription.getText().toString().matches("")) {
+                                showLoadingAnimation("Loading Please wait!");
+                                ServiceTitleEdit = ServiceTitle.getText().toString();
+                                ServiceDescriptionEdit = ServiceDescription.getText().toString();
+                                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                                        .permitAll().build();
+                                StrictMode.setThreadPolicy(policy);
+                                Thread thread1 = new Thread(new Runnable() {
                                     public void run() {
-                                        Toast.makeText(getApplicationContext(),
-                                                "Service successfully uploaded!", Toast.LENGTH_LONG)
-                                                .show();
-                                        ServiceTitle.getText().clear();
-                                        ServiceDescription.getText().clear();
-                                        ivLogoWiseL.setImageResource(0);
-                                        hideLoadingAnimation();
+                                        try {
+                                            String response = POSTRequest();
+
+                                            if (response != null) {
+                                                runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        Toast.makeText(getApplicationContext(),
+                                                                "Service successfully uploaded!", Toast.LENGTH_LONG)
+                                                                .show();
+                                                        ServiceTitle.getText().clear();
+                                                        ServiceDescription.getText().clear();
+                                                        ivLogoWiseL.setImageResource(0);
+                                                        hideLoadingAnimation();
+                                                    }
+                                                });
+                                            } else {
+                                                runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        Toast.makeText(getApplicationContext(),
+                                                                "Failed to upload, please check input!", Toast.LENGTH_LONG)
+                                                                .show();
+                                                        hideLoadingAnimation();
+                                                    }
+                                                });
+                                            }
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
                                     }
                                 });
+                                thread1.start();
                             }else{
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(getApplicationContext(),
-                                                "Failed to upload, please check input!", Toast.LENGTH_LONG)
-                                                .show();
-                                        hideLoadingAnimation();
-                                    }
-                                });
+                                Toast.makeText(uploadServiceActivity.this, "You did not enter a description", Toast.LENGTH_SHORT).show();
+                                return;
                             }
-                        }catch (Exception e){
-                            e.printStackTrace();
+                        }else{
+                            Toast.makeText(uploadServiceActivity.this, "You did not select a category", Toast.LENGTH_SHORT).show();
+                            return;
                         }
+                    }else{
+                        Toast.makeText(uploadServiceActivity.this, "You did not enter a title", Toast.LENGTH_SHORT).show();
+                        return;
                     }
-                });
-
-                thread1.start();
+                }else{
+                    Toast.makeText(uploadServiceActivity.this, "You did not select an image", Toast.LENGTH_SHORT).show();
+                    return;
+                }
             }
         });
 
@@ -413,9 +431,6 @@ public class uploadServiceActivity extends AppCompatActivity {
     public String POSTRequest() throws IOException {
 
         PreferenceUtils utils = new PreferenceUtils();
-        Map config = new HashMap();
-        config.put("cloud_name", "predator423");
-        MediaManager.init(this, config);
         MediaManager.get().upload(imageUri)
                 .unsigned(CLOUDINARY_UPLOAD_PRESET).callback(new UploadCallback() {
                     @Override

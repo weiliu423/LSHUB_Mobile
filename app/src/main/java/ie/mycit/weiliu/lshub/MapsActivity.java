@@ -34,6 +34,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -79,6 +80,10 @@ public class MapsActivity extends refreshActivity implements OnMapReadyCallback,
     ArrayList<String> arraylist = new ArrayList<String>();
     String city = "";
     String country = "";
+    List<Address> addresses;
+    Geocoder geoCoder;
+
+
     private final String TAG = "LSH";
 
     private GoogleApiClient mGoogleApiClient;
@@ -101,12 +106,11 @@ public class MapsActivity extends refreshActivity implements OnMapReadyCallback,
         checkLocationPermission();
 
         GPSTracker mGPS = new GPSTracker(this);
-        Geocoder geoCoder = new Geocoder(getBaseContext(), Locale.getDefault());
-
+        geoCoder = new Geocoder(getBaseContext(), Locale.getDefault());
         if (mGPS.canGetLocation) {
             mGPS.getLocation();
             try {
-                List<Address> addresses = geoCoder.getFromLocation(mGPS.getLatitude(), mGPS.getLongitude(), 1);
+               addresses = geoCoder.getFromLocation(mGPS.getLatitude(), mGPS.getLongitude(), 1);
 
                 if (addresses.size() > 0) {
                     city = addresses.get(0).getAdminArea();
@@ -362,41 +366,6 @@ public class MapsActivity extends refreshActivity implements OnMapReadyCallback,
         }
     }
 
-    public static double similarity(String s1, String s2) {
-        String longer = s1, shorter = s2;
-        if (s1.length() < s2.length()) { // longer should always have greater length
-            longer = s2; shorter = s1;
-        }
-        int longerLength = longer.length();
-        if (longerLength == 0) { return 1.0; /* both strings are zero length */ }
-        return (longerLength - 	editDistance(longer, shorter)) / (double) longerLength;
-    }
-    public static int editDistance(String s1, String s2) {
-        s1 = s1.toLowerCase();
-        s2 = s2.toLowerCase();
-
-        int[] costs = new int[s2.length() + 1];
-        for (int i = 0; i <= s1.length(); i++) {
-            int lastValue = i;
-            for (int j = 0; j <= s2.length(); j++) {
-                if (i == 0)
-                    costs[j] = j;
-                else {
-                    if (j > 0) {
-                        int newValue = costs[j - 1];
-                        if (s1.charAt(i - 1) != s2.charAt(j - 1))
-                            newValue = Math.min(Math.min(newValue, lastValue),
-                                    costs[j]) + 1;
-                        costs[j - 1] = lastValue;
-                        lastValue = newValue;
-                    }
-                }
-            }
-            if (i > 0)
-                costs[s2.length()] = lastValue;
-        }
-        return costs[s2.length()];
-    }
     public static void setListViewHeightBasedOnChildren(ListView listView) {
         ListAdapter listAdapter = listView.getAdapter();
         if (listAdapter == null)
@@ -452,15 +421,37 @@ public class MapsActivity extends refreshActivity implements OnMapReadyCallback,
             return null;
         }
     }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         GPSTracker mGPS = new GPSTracker(this);
-
         mMap = googleMap;
+        LatLng p1 = null;
+        try {
+            addresses = geoCoder.getFromLocationName(city + " city, " + country, 5);
+            List<LatLng> ll = new ArrayList<LatLng>(addresses.size());
+            for(Address location : addresses){
+                if(location.hasLatitude() && location.hasLongitude()){
+                    if (addresses != null) {
+                        p1 = new LatLng(location.getLatitude(), location.getLongitude() );
+                        mMap.addMarker(new MarkerOptions().position(p1).title("Service within " + city));
+                        mMap.addCircle(new CircleOptions()
+                                .center(new LatLng(location.getLatitude(), location.getLongitude()))
+                                .radius(50000)
+                                .strokeColor(Color.BLACK)
+                                .fillColor(0x30ff0000))
+                                .setStrokeWidth(1);
+                    }
+                }
+            }
+
+        }catch (Exception e){
+
+        }
         if(mGPS.canGetLocation ){
             mGPS.getLocation();
             LatLng cork = new LatLng(mGPS.getLatitude(), mGPS.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(cork).title("Marker in cork"));
+            mMap.addMarker(new MarkerOptions().position(cork).title("Your location"));
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mGPS.getLatitude(), mGPS.getLongitude()), 9.0f));
             //mMap.moveCamera(CameraUpdateFactory.newLatLng(cork));
         }else{

@@ -157,6 +157,18 @@
                     android:padding="2sp"
                     android:text="UPDATE"
                     android:textSize="25sp" />
+                <Button
+                    android:id="@+id/ServiceDeleteBtn"
+                    style="?android:textAppearanceSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="10sp"
+                    android:background="@drawable/mybutton"
+                    android:ems="10"
+                    android:padding="2sp"
+                    android:text="REMOVE"
+                    android:textSize="25sp" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

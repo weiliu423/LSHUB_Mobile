@@ -17,7 +17,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -47,7 +46,7 @@ import ie.mycit.weiliu.lshub.utils.AccountHeaderHelper;
 import ie.mycit.weiliu.lshub.utils.DrawerHelper;
 import ie.mycit.weiliu.lshub.utils.PreferenceUtils;
 
-public class viewMyServiceListActivity extends AppCompatActivity {
+public class viewMyServiceListActivity extends refreshActivity {
 
 
     private AccountHeader headerResult = null;
